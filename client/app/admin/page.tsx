@@ -9,12 +9,13 @@ import { api, apiUrl } from "@/lib/api";
 import { API_ROUTES } from "@/lib/types";
 import { getAdminToken } from "@/lib/auth";
 import { formatPrice } from "@/lib/utils";
+import { t, orderStatusLabel } from "@/lib/i18n";
 import type { Order, OrderStatus } from "@/lib/types";
 
 const columns: { status: OrderStatus; title: string; icon: typeof Clock }[] = [
-  { status: "pending", title: "Pending", icon: Clock },
-  { status: "preparing", title: "Preparing", icon: ChefHat },
-  { status: "completed", title: "Completed", icon: CheckCircle2 },
+  { status: "pending", title: orderStatusLabel.pending, icon: Clock },
+  { status: "preparing", title: orderStatusLabel.preparing, icon: ChefHat },
+  { status: "completed", title: orderStatusLabel.completed, icon: CheckCircle2 },
 ];
 
 function OrderCard({
@@ -25,8 +26,8 @@ function OrderCard({
   onStatusChange: (id: string, status: OrderStatus) => void;
 }) {
   const nextAction: Record<string, { label: string; status: OrderStatus } | null> = {
-    pending: { label: "Accept", status: "preparing" },
-    preparing: { label: "Complete", status: "completed" },
+    pending: { label: t.acceptOrder, status: "preparing" },
+    preparing: { label: t.completeOrder, status: "completed" },
     completed: null,
     cancelled: null,
   };
@@ -42,8 +43,8 @@ function OrderCard({
           </p>
           <p className="mt-1 text-lg font-bold">{formatPrice(order.totalAmount)}</p>
         </div>
-        <span className="rounded-full bg-zinc-100 px-2 py-0.5 text-xs capitalize text-zinc-600">
-          {order.status}
+        <span className="rounded-full bg-zinc-100 px-2 py-0.5 text-xs text-zinc-600">
+          {orderStatusLabel[order.status]}
         </span>
       </div>
       <ul className="mt-3 space-y-1 border-t border-zinc-100 pt-3">
@@ -160,15 +161,15 @@ export default function AdminOrdersPage() {
     <AdminShell>
       {flash && (
         <div className="mb-4 animate-pulse rounded-xl bg-black px-4 py-3 text-center text-sm font-medium text-white">
-          New order received!
+          {t.newOrderReceived}
         </div>
       )}
 
       <div className="mb-6 flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-zinc-900">Order Board</h2>
+          <h2 className="text-2xl font-bold text-zinc-900">{t.orderBoard}</h2>
           <p className="text-sm text-zinc-500">
-            {activeOrders.length} active orders · Real-time sync enabled
+            {t.activeOrders(activeOrders.length)}
           </p>
         </div>
       </div>
@@ -188,7 +189,7 @@ export default function AdminOrdersPage() {
               <div className="space-y-3">
                 {columnOrders.length === 0 ? (
                   <p className="py-8 text-center text-sm text-zinc-500">
-                    No orders
+                    {t.noOrders}
                   </p>
                 ) : (
                   columnOrders.map((order) => (
@@ -207,7 +208,7 @@ export default function AdminOrdersPage() {
 
       {orders.some((o) => o.status === "completed") && (
         <section className="mt-8">
-          <h3 className="mb-4 font-semibold text-zinc-700">Recently Completed</h3>
+          <h3 className="mb-4 font-semibold text-zinc-700">{t.recentlyCompleted}</h3>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {orders
               .filter((o) => o.status === "completed")

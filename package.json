@@ -8,7 +8,7 @@
     "dev:client": "cd client && bun run dev",
     "sync:env": "bun scripts/sync-env.ts",
     "build": "cd client && bun run build",
-    "vercel-build": "cd client && bun run build",
+    "vercel-build": "cd client && bun run build && rm -rf ../.next && cp -R .next ../.next",
     "deploy:api": "cd server && bun run deploy",
     "db:generate": "cd server && bun run db:generate",
     "db:setup": "cd server && bun run db:setup",

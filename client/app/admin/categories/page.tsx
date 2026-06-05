@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { api } from "@/lib/api";
 import { getAdminToken } from "@/lib/auth";
+import { t } from "@/lib/i18n";
 
 export default function AdminCategoriesPage() {
   const queryClient = useQueryClient();
@@ -41,7 +42,7 @@ export default function AdminCategoriesPage() {
     },
     onError: (err) => {
       setDeleteError(
-        err instanceof Error ? err.message : "Failed to delete category"
+        err instanceof Error ? err.message : t.failedDeleteCategory
       );
     },
     onSettled: () => setDeletingId(null),
@@ -55,8 +56,8 @@ export default function AdminCategoriesPage() {
 
   return (
     <AdminShell>
-      <h2 className="text-2xl font-bold text-zinc-900">Categories</h2>
-      <p className="mt-1 text-sm text-zinc-500">Manage menu categories</p>
+      <h2 className="text-2xl font-bold text-zinc-900">{t.categoriesTitle}</h2>
+      <p className="mt-1 text-sm text-zinc-500">{t.categoriesHint}</p>
 
       <form
         className="mt-6 flex max-w-lg gap-3"
@@ -67,17 +68,17 @@ export default function AdminCategoriesPage() {
       >
         <div className="flex-1">
           <Label htmlFor="cat-name" className="sr-only">
-            Category name
+            {t.categoryName}
           </Label>
           <Input
             id="cat-name"
-            placeholder="New category name"
+            placeholder={t.newCategoryPlaceholder}
             value={name}
             onChange={(e) => setName(e.target.value)}
           />
         </div>
         <Button type="submit" className="rounded-xl" disabled={createMutation.isPending}>
-          Add
+          {t.add}
         </Button>
       </form>
 
@@ -85,7 +86,7 @@ export default function AdminCategoriesPage() {
         <p className="mt-4 text-sm text-red-500">
           {createMutation.error instanceof Error
             ? createMutation.error.message
-            : "Failed to add category"}
+            : t.failedAddCategory}
         </p>
       )}
 
@@ -107,7 +108,7 @@ export default function AdminCategoriesPage() {
               onClick={() => handleDelete(cat.id)}
               disabled={deletingId === cat.id}
               className="text-red-500 hover:text-red-700 disabled:opacity-40"
-              aria-label={`Delete ${cat.name}`}
+              aria-label={t.deleteCategory(cat.name)}
             >
               <Trash2 className="h-4 w-4" />
             </button>

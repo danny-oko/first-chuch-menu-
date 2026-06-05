@@ -13,6 +13,7 @@ import { useCartStore } from "@/store/cart";
 import { formatPrice } from "@/lib/utils";
 import { api } from "@/lib/api";
 import { CUSTOMER_NAME_KEY } from "@/lib/order-payment";
+import { t } from "@/lib/i18n";
 
 export default function CartPage() {
   const router = useRouter();
@@ -59,7 +60,7 @@ export default function CartPage() {
       setShowConfirm(false);
       router.push("/checkout/success");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Checkout failed");
+      setError(err instanceof Error ? err.message : t.checkoutFailed);
     } finally {
       setSubmitting(false);
     }
@@ -77,22 +78,22 @@ export default function CartPage() {
           </Link>
           <div>
             <h1 className="text-xl font-bold text-zinc-900 lg:text-3xl">
-              Your Cart
+              {t.yourCart}
             </h1>
             <p className="hidden text-sm text-zinc-500 lg:block">
-              {items.length} {items.length === 1 ? "item" : "items"}
+              {items.length} {items.length === 1 ? t.item : t.items}
             </p>
           </div>
         </div>
 
         {items.length === 0 ? (
           <div className="mt-16 text-center lg:mt-24">
-            <p className="text-zinc-500 lg:text-lg">Your cart is empty</p>
+            <p className="text-zinc-500 lg:text-lg">{t.cartEmpty}</p>
             <Link
               href="/"
               className="mt-4 inline-block text-sm font-medium text-black underline lg:text-base"
             >
-              Browse menu
+              {t.browseMenu}
             </Link>
           </div>
         ) : (
@@ -156,10 +157,10 @@ export default function CartPage() {
 
             <div className="mt-8 rounded-2xl bg-white p-5 shadow-sm ring-1 ring-zinc-100 lg:sticky lg:top-8 lg:mt-0 lg:p-6">
               <h2 className="hidden font-semibold text-zinc-900 lg:block lg:text-lg">
-                Order Summary
+                {t.orderSummary}
               </h2>
               <div className="mt-0 flex items-center justify-between lg:mt-4 lg:border-t lg:border-zinc-100 lg:pt-4">
-                <span className="text-zinc-500 lg:text-base">Total</span>
+                <span className="text-zinc-500 lg:text-base">{t.total}</span>
                 <span className="text-xl font-bold lg:text-2xl">
                   {formatPrice(total)}
                 </span>
@@ -169,13 +170,13 @@ export default function CartPage() {
                 size="lg"
                 onClick={openConfirm}
               >
-                Place Order
+                {t.placeOrder}
               </Button>
               <Link
                 href="/"
                 className="mt-3 hidden w-full text-center text-sm text-zinc-500 hover:text-zinc-800 lg:block"
               >
-                Continue shopping
+                {t.continueShopping}
               </Link>
             </div>
           </div>

@@ -5,14 +5,15 @@ import { usePathname } from "next/navigation";
 import { Home, ShoppingBag, Search, Shield } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useCartStore } from "@/store/cart";
+import { t } from "@/lib/i18n";
 
 export function DesktopNav() {
   const pathname = usePathname();
   const totalItems = useCartStore((s) => s.totalItems());
 
   const links = [
-    { href: "/", label: "Menu", icon: Home },
-    { href: "/cart", label: "Cart", icon: ShoppingBag, badge: totalItems },
+    { href: "/", label: t.navMenu, icon: Home },
+    { href: "/cart", label: t.navCart, icon: ShoppingBag, badge: totalItems },
   ];
 
   return (
@@ -20,9 +21,9 @@ export function DesktopNav() {
       <div className="mx-auto flex max-w-7xl items-center justify-between px-8 py-5">
         <Link href="/" className="flex flex-col">
           <span className="text-xl font-bold tracking-tight text-zinc-900">
-            Delicious Menu
+            {t.appTitle}
           </span>
-          <span className="text-xs text-zinc-500">Fresh & healthy food</span>
+          <span className="text-xs text-zinc-500">{t.appSubtitle}</span>
         </Link>
 
         <nav className="flex items-center gap-2">
@@ -52,7 +53,7 @@ export function DesktopNav() {
           <button
             type="button"
             className="ml-2 flex h-10 w-10 items-center justify-center rounded-full text-zinc-600 hover:bg-zinc-100"
-            aria-label="Search"
+            aria-label={t.search}
           >
             <Search className="h-4 w-4" />
           </button>
@@ -61,7 +62,7 @@ export function DesktopNav() {
             className="ml-1 flex items-center gap-2 rounded-full px-4 py-2.5 text-sm font-medium text-zinc-500 hover:bg-zinc-100 hover:text-zinc-800"
           >
             <Shield className="h-4 w-4" />
-            Admin
+            {t.navAdmin}
           </Link>
         </nav>
       </div>

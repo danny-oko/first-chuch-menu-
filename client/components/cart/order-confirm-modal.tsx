@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { t } from "@/lib/i18n";
 import {
   BANK_ACCOUNT_NUMBER,
   BANK_NAME,
@@ -55,7 +56,7 @@ function CopyField({ label, value, copyValue, mono }: CopyFieldProps) {
               ? "bg-green-100 text-green-700"
               : "bg-black text-white hover:bg-zinc-800",
           )}
-          aria-label={copied ? `${label} copied` : `Copy ${label}`}
+          aria-label={copied ? `${label} ${t.copied}` : `${t.copy} ${label}`}
         >
           {copied ? (
             <Check className="h-4 w-4" />
@@ -95,7 +96,7 @@ export function OrderConfirmModal({
 
   const transferNote = userName.trim()
     ? buildTransferNote(userName, items)
-    : buildTransferNote("...", items).replace("...", "Таны нэр");
+    : buildTransferNote("...", items).replace("...", t.namePlaceholderShort);
 
   const accountDisplay = `${BANK_ACCOUNT_NUMBER} ${BANK_NAME}`;
 
@@ -105,7 +106,7 @@ export function OrderConfirmModal({
         type="button"
         className="absolute inset-0 bg-black/50 backdrop-blur-sm"
         onClick={onClose}
-        aria-label="Close"
+        aria-label={t.close}
       />
       <div
         role="dialog"
@@ -117,7 +118,7 @@ export function OrderConfirmModal({
           type="button"
           onClick={onClose}
           className="absolute right-4 top-4 flex h-8 w-8 items-center justify-center rounded-full bg-zinc-100 text-zinc-600"
-          aria-label="Close"
+          aria-label={t.close}
         >
           <X className="h-4 w-4" />
         </button>
@@ -126,35 +127,33 @@ export function OrderConfirmModal({
           id="order-confirm-title"
           className="pr-8 text-xl font-bold text-zinc-900"
         >
-          Захиалга баталгаажуулах
+          {t.confirmOrderTitle}
         </h2>
-        <p className="mt-1 text-sm text-zinc-500">
-          Эхлээд доорх данс руу шилжүүлэг хийж, дараа нь захиалга илгээнэ үү.
-        </p>
+        <p className="mt-1 text-sm text-zinc-500">{t.confirmOrderHint}</p>
 
         <div className="mt-5 space-y-3">
           <div>
-            <Label htmlFor="customer-name">Таны нэр</Label>
+            <Label htmlFor="customer-name">{t.yourName}</Label>
             <Input
               id="customer-name"
               value={userName}
               onChange={(e) => onUserNameChange(e.target.value)}
-              placeholder="Жишээ нь: Дэнни"
+              placeholder={t.namePlaceholder}
               className="mt-1.5"
             />
           </div>
 
           <CopyField
-            label="Дансны дугаар"
+            label={t.accountNumber}
             value={accountDisplay}
             copyValue={BANK_ACCOUNT_NUMBER}
             mono
           />
 
-          <CopyField label="Гүйлгээний утга" value={transferNote} />
+          <CopyField label={t.transferNote} value={transferNote} />
 
           <div className="flex items-center justify-between rounded-xl border border-zinc-200 px-4 py-3">
-            <span className="text-sm text-zinc-500">Нийт дүн</span>
+            <span className="text-sm text-zinc-500">{t.totalAmount}</span>
             <span className="text-lg font-bold text-zinc-900">
               {formatPrice(total)}
             </span>
@@ -170,7 +169,7 @@ export function OrderConfirmModal({
             onClick={onConfirm}
             disabled={submitting || !userName.trim()}
           >
-            {submitting ? "Илгээж байна..." : "Захиалга илгээх"}
+            {submitting ? t.submitting : t.submitOrder}
           </Button>
           <Button
             type="button"
@@ -179,7 +178,7 @@ export function OrderConfirmModal({
             onClick={onClose}
             disabled={submitting}
           >
-            Болих
+            {t.cancel}
           </Button>
         </div>
       </div>

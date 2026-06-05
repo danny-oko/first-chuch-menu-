@@ -2,6 +2,7 @@ import Link from "next/link";
 import { CheckCircle2 } from "lucide-react";
 import { AppShell } from "@/components/menu/app-shell";
 import { Button } from "@/components/ui/button";
+import { t } from "@/lib/i18n";
 
 export default function CheckoutSuccessPage() {
   return (
@@ -11,15 +12,14 @@ export default function CheckoutSuccessPage() {
           <CheckCircle2 className="h-10 w-10 text-green-600 lg:h-12 lg:w-12" />
         </div>
         <h1 className="mt-6 text-2xl font-bold text-zinc-900 lg:text-4xl">
-          Order Placed!
+          {t.orderPlaced}
         </h1>
         <p className="mt-2 max-w-md text-sm text-zinc-500 lg:text-base">
-          Your order has been sent to the kitchen. We&apos;ll have it ready
-          soon.
+          {t.orderPlacedHint}
         </p>
         <Link href="/" className="mt-8 w-full max-w-sm">
           <Button className="w-full rounded-2xl" size="lg">
-            Back to Menu
+            {t.backToMenu}
           </Button>
         </Link>
       </div>

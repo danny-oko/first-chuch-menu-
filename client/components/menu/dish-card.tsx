@@ -6,6 +6,7 @@ import { Plus } from "lucide-react";
 import { formatPrice } from "@/lib/utils";
 import type { Dish } from "@/lib/types";
 import { useCartStore } from "@/store/cart";
+import { t } from "@/lib/i18n";
 
 type FeaturedDishCardProps = {
   dish: Dish;
@@ -31,7 +32,7 @@ export function FeaturedDishCard({ dish }: FeaturedDishCardProps) {
         <div className="min-w-0 flex-1 py-2">
           <Link href={`/dish/${dish.id}`}>
             <p className="text-xs font-medium uppercase tracking-wider text-zinc-400 lg:text-sm">
-              Featured
+              {t.featured}
             </p>
             <h3 className="text-lg font-bold text-zinc-900 lg:text-2xl">
               {dish.name}
@@ -48,7 +49,7 @@ export function FeaturedDishCard({ dish }: FeaturedDishCardProps) {
           type="button"
           onClick={() => addItem(dish)}
           className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-black text-white shadow-md transition-transform active:scale-90 lg:h-12 lg:w-12"
-          aria-label={`Add ${dish.name} to cart`}
+          aria-label={t.addDishToCart(dish.name)}
         >
           <Plus className="h-5 w-5 lg:h-6 lg:w-6" />
         </button>

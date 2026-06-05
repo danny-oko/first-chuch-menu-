@@ -8,6 +8,7 @@ import { useQuery } from "@tanstack/react-query";
 import { api } from "@/lib/api";
 import { formatPrice } from "@/lib/utils";
 import { useCartStore } from "@/store/cart";
+import { t } from "@/lib/i18n";
 
 type DishDetailProps = {
   dishId: string;
@@ -53,14 +54,14 @@ export function DishDetail({ dishId }: DishDetailProps) {
           type="button"
           onClick={() => router.back()}
           className="flex h-10 w-10 items-center justify-center rounded-full bg-white/80 text-zinc-800 backdrop-blur lg:bg-white lg:shadow-sm lg:ring-1 lg:ring-zinc-100"
-          aria-label="Go back"
+          aria-label={t.goBack}
         >
           <ArrowLeft className="h-5 w-5" />
         </button>
         <button
           type="button"
           className="flex h-10 w-10 items-center justify-center rounded-full bg-white/80 text-zinc-800 backdrop-blur lg:bg-white lg:shadow-sm lg:ring-1 lg:ring-zinc-100"
-          aria-label="More options"
+          aria-label={t.moreOptions}
         >
           <MoreVertical className="h-5 w-5" />
         </button>
@@ -89,7 +90,7 @@ export function DishDetail({ dishId }: DishDetailProps) {
 
         <div className="px-6 lg:flex lg:flex-col lg:px-0 lg:pt-6">
           <p className="text-xs font-medium uppercase tracking-wider text-zinc-400 lg:text-sm">
-            {dish.categoryName ?? "Special"}
+            {dish.categoryName ?? t.special}
           </p>
           <div className="mt-2 flex items-start justify-between gap-4">
             <h1 className="text-2xl font-bold text-zinc-900 lg:text-4xl">
@@ -100,7 +101,7 @@ export function DishDetail({ dishId }: DishDetailProps) {
                 type="button"
                 onClick={() => setQuantity((q) => Math.max(1, q - 1))}
                 className="flex h-6 w-6 items-center justify-center lg:h-7 lg:w-7"
-                aria-label="Decrease quantity"
+                aria-label={t.decreaseQty}
               >
                 <Minus className="h-4 w-4" />
               </button>
@@ -111,7 +112,7 @@ export function DishDetail({ dishId }: DishDetailProps) {
                 type="button"
                 onClick={() => setQuantity((q) => q + 1)}
                 className="flex h-6 w-6 items-center justify-center lg:h-7 lg:w-7"
-                aria-label="Increase quantity"
+                aria-label={t.increaseQty}
               >
                 <Plus className="h-4 w-4" />
               </button>
@@ -119,8 +120,7 @@ export function DishDetail({ dishId }: DishDetailProps) {
           </div>
 
           <p className="mt-4 text-sm leading-relaxed text-zinc-500 lg:mt-6 lg:text-base lg:leading-7">
-            {dish.description ??
-              "Fresh and healthy dish made with our own Chef Recipe. Special healthy and fat-free dish for those who want to lose weight."}
+            {dish.description ?? t.defaultDishDescription}
           </p>
 
           <div className="mt-6 flex items-center gap-3 text-sm text-zinc-600 lg:mt-8">
@@ -128,14 +128,14 @@ export function DishDetail({ dishId }: DishDetailProps) {
               <Clock className="h-4 w-4 lg:h-5 lg:w-5" />
             </div>
             <div>
-              <p className="text-xs text-zinc-400 lg:text-sm">Delivery Time</p>
-              <p className="font-semibold text-zinc-800 lg:text-lg">25 Mins</p>
+              <p className="text-xs text-zinc-400 lg:text-sm">{t.deliveryTime}</p>
+              <p className="font-semibold text-zinc-800 lg:text-lg">{t.deliveryMins}</p>
             </div>
           </div>
 
           <div className="mt-8 hidden items-center justify-between rounded-2xl bg-white p-6 shadow-sm ring-1 ring-zinc-100 lg:flex">
             <div>
-              <p className="text-sm text-zinc-400">Total Price</p>
+              <p className="text-sm text-zinc-400">{t.totalPrice}</p>
               <p className="text-3xl font-bold text-zinc-900">
                 {formatPrice(total)}
               </p>
@@ -146,7 +146,7 @@ export function DishDetail({ dishId }: DishDetailProps) {
               className={`flex h-14 items-center gap-3 rounded-2xl bg-black px-8 text-white shadow-lg transition-all hover:bg-zinc-800 active:scale-95 ${added ? "animate-pulse ring-4 ring-black/20" : ""}`}
             >
               <ShoppingCart className="h-5 w-5" />
-              <span className="font-semibold">Add to Cart</span>
+              <span className="font-semibold">{t.addToCart}</span>
               {quantity > 0 && (
                 <span className="flex h-6 w-6 items-center justify-center rounded-full bg-red-500 text-xs font-bold">
                   {quantity}
@@ -160,7 +160,7 @@ export function DishDetail({ dishId }: DishDetailProps) {
       <footer className="fixed bottom-0 left-0 right-0 border-t border-zinc-100 bg-white px-6 py-5 lg:hidden">
         <div className="mx-auto flex max-w-md items-center justify-between">
           <div>
-            <p className="text-xs text-zinc-400">Total Price</p>
+            <p className="text-xs text-zinc-400">{t.totalPrice}</p>
             <p className="text-2xl font-bold text-zinc-900">
               {formatPrice(total)}
             </p>
@@ -169,7 +169,7 @@ export function DishDetail({ dishId }: DishDetailProps) {
             type="button"
             onClick={handleAddToCart}
             className={`relative flex h-14 w-14 items-center justify-center rounded-2xl bg-black text-white shadow-lg transition-all active:scale-95 ${added ? "animate-pulse ring-4 ring-black/20" : ""}`}
-            aria-label="Add to cart"
+            aria-label={t.addToCart}
           >
             <ShoppingCart className="h-6 w-6" />
             {quantity > 0 && (

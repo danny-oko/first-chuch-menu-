@@ -2,6 +2,7 @@
 
 import { cn } from "@/lib/utils";
 import type { Category } from "@/lib/types";
+import { t } from "@/lib/i18n";
 
 export const ALL_CATEGORY_ID = "all";
 
@@ -29,7 +30,7 @@ export function CategoryTabs({
               : "bg-white text-zinc-500 shadow-sm ring-1 ring-zinc-100 hover:ring-zinc-200"
           )}
         >
-          All
+          {t.categoryAll}
         </button>
         {categories.map((cat) => (
           <button

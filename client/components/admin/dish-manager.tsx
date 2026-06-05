@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { api } from "@/lib/api";
 import { getAdminToken } from "@/lib/auth";
 import { formatPrice } from "@/lib/utils";
+import { t } from "@/lib/i18n";
 
 export function DishManager() {
   const queryClient = useQueryClient();
@@ -65,7 +66,7 @@ export function DishManager() {
     },
     onError: (err) => {
       setDeleteError(
-        err instanceof Error ? err.message : "Failed to delete dish"
+        err instanceof Error ? err.message : t.failedDeleteDish
       );
     },
     onSettled: () => setDeletingId(null),
@@ -91,8 +92,8 @@ export function DishManager() {
 
   return (
     <>
-      <h2 className="text-2xl font-bold text-zinc-900">Dishes</h2>
-      <p className="mt-1 text-sm text-zinc-500">Add and manage menu items</p>
+      <h2 className="text-2xl font-bold text-zinc-900">{t.dishesTitle}</h2>
+      <p className="mt-1 text-sm text-zinc-500">{t.dishesHint}</p>
 
       <form
         className="mt-6 grid max-w-2xl gap-4 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-zinc-200"
@@ -102,7 +103,7 @@ export function DishManager() {
         }}
       >
         <div>
-          <Label htmlFor="dish-name">Name</Label>
+          <Label htmlFor="dish-name">{t.dishName}</Label>
           <Input
             id="dish-name"
             className="mt-1.5"
@@ -112,7 +113,7 @@ export function DishManager() {
           />
         </div>
         <div>
-          <Label htmlFor="dish-cat">Category</Label>
+          <Label htmlFor="dish-cat">{t.dishCategory}</Label>
           <select
             id="dish-cat"
             className="mt-1.5 flex h-11 w-full rounded-xl border border-zinc-200 bg-white px-4 text-sm outline-none focus:border-black"
@@ -120,7 +121,7 @@ export function DishManager() {
             onChange={(e) => setForm({ ...form, categoryId: e.target.value })}
             required
           >
-            <option value="">Select category</option>
+            <option value="">{t.selectCategory}</option>
             {categories.map((c) => (
               <option key={c.id} value={c.id}>
                 {c.name}
@@ -129,7 +130,7 @@ export function DishManager() {
           </select>
         </div>
         <div>
-          <Label htmlFor="dish-price">Price ($)</Label>
+          <Label htmlFor="dish-price">{t.dishPrice}</Label>
           <Input
             id="dish-price"
             type="number"
@@ -142,7 +143,7 @@ export function DishManager() {
           />
         </div>
         <div>
-          <Label htmlFor="dish-desc">Description</Label>
+          <Label htmlFor="dish-desc">{t.dishDescription}</Label>
           <Input
             id="dish-desc"
             className="mt-1.5"
@@ -151,7 +152,7 @@ export function DishManager() {
           />
         </div>
         <div>
-          <Label>Image</Label>
+          <Label>{t.dishImage}</Label>
           <input
             ref={fileRef}
             type="file"
@@ -168,10 +169,10 @@ export function DishManager() {
           >
             <Upload className="mr-2 h-4 w-4" />
             {uploading
-              ? "Uploading..."
+              ? t.uploading
               : form.imageUrl
-                ? "Image uploaded ✓"
-                : "Upload dish image"}
+                ? t.imageUploaded
+                : t.uploadDishImage}
           </Button>
         </div>
         <Button
@@ -179,7 +180,7 @@ export function DishManager() {
           className="rounded-xl"
           disabled={!form.imageUrl || createMutation.isPending}
         >
-          Add Dish
+          {t.addDish}
         </Button>
       </form>
 

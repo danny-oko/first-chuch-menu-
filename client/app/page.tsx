@@ -10,6 +10,7 @@ import {
 import { FeaturedDishCard, DishGridCard } from "@/components/menu/dish-card";
 import { BottomNav } from "@/components/menu/bottom-nav";
 import { AppShell } from "@/components/menu/app-shell";
+import { t } from "@/lib/i18n";
 
 export default function HomePage() {
   const [activeCategoryId, setActiveCategoryId] = useState(ALL_CATEGORY_ID);
@@ -30,8 +31,9 @@ export default function HomePage() {
   const activeCategory = categories.find((c) => c.id === activeCategoryId);
   const headingName =
     activeCategoryId === ALL_CATEGORY_ID
-      ? "Food"
-      : (activeCategory?.name ?? "Food");
+      ? t.food
+      : (activeCategory?.name ?? t.food);
+
   const featuredDish = dishes[0];
   const gridDishes = dishes.slice(1);
 
@@ -41,14 +43,14 @@ export default function HomePage() {
         <section className="mt-2 lg:mt-0 lg:flex lg:items-end lg:justify-between">
           <div>
             <h1 className="text-3xl font-bold tracking-tight text-zinc-900 lg:text-5xl">
-              Delicious {headingName}
+              {t.delicious} {headingName}
             </h1>
             <p className="mt-1 text-sm text-zinc-500 lg:mt-2 lg:text-base">
-              We made fresh and Healthy food
+              {t.homeTagline}
             </p>
           </div>
           <p className="mt-4 hidden text-sm text-zinc-400 lg:block">
-            {dishes.length} items available
+            {t.itemsAvailable(dishes.length)}
           </p>
         </section>
 
@@ -79,8 +81,8 @@ export default function HomePage() {
         ) : dishes.length === 0 ? (
           <p className="mt-12 text-center text-sm text-zinc-500 lg:mt-20 lg:text-base">
             {activeCategoryId === ALL_CATEGORY_ID
-              ? "No dishes available yet."
-              : "No dishes in this category yet."}
+              ? t.noDishesYet
+              : t.noDishesInCategory}
           </p>
         ) : (
           <>

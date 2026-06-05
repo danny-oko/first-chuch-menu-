@@ -10,8 +10,8 @@ const geist = Geist({
 });
 
 export const metadata: Metadata = {
-  title: "Delicious Salads | Food Menu",
-  description: "Fresh and healthy food ordering",
+  title: "Амттай цэс | Хоолны захиалга",
+  description: "Шинэ, эрүүл хоол захиалах",
 };
 
 export default function RootLayout({
@@ -20,7 +20,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${geist.variable} h-full antialiased`}>
+    <html lang="mn" className={`${geist.variable} h-full antialiased`}>
       <body className="min-h-full bg-[#f5f5f5] font-sans text-zinc-900">
         <QueryProvider>
           <ApiHealthCheck>{children}</ApiHealthCheck>

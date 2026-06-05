@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { api } from "@/lib/api";
+import { t } from "@/lib/i18n";
 import { API_ROUTES } from "@/lib/types";
 
 export function ApiHealthCheck({ children }: { children: React.ReactNode }) {
@@ -26,7 +27,7 @@ export function ApiHealthCheck({ children }: { children: React.ReactNode }) {
     <>
       {online === false && (
         <div className="fixed inset-x-0 top-0 z-[100] bg-red-600 px-4 py-2 text-center text-sm font-medium text-white">
-          Menu API unreachable — check your connection or try again shortly.
+          {t.apiUnreachable}
         </div>
       )}
       {children}

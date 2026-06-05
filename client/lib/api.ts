@@ -6,6 +6,7 @@ import type {
 } from "./types";
 import { API_ROUTES } from "./types";
 import { apiUrl } from "./api-config";
+import { formatApiErrorMessage, t } from "./i18n";
 
 async function request<T>(
   path: string,
@@ -28,29 +29,10 @@ async function request<T>(
 
   if (!res.ok) {
     const error = await res.json().catch(() => ({ error: res.statusText }));
-    throw new Error(formatApiError(error.error ?? "Request failed", res.status));
+    throw new Error(formatApiErrorMessage(error.error ?? t.requestFailed, res.status));
   }
 
   return res.json() as Promise<T>;
-}
-
-function formatApiError(message: string, status: number): string {
-  if (message === "Category not found") {
-    return "Category not found. Refresh the page and try again.";
-  }
-  if (
-    message ===
-    "Cannot delete category: dishes in this category have order history"
-  ) {
-    return "Cannot delete this category — it contains dishes that appear in past orders.";
-  }
-  if (message === "Cannot delete dish: it exists in past orders") {
-    return "Cannot delete this dish — it appears in past orders.";
-  }
-  if (status >= 500) {
-    return "Server error. Start the API: cd server && bun run dev";
-  }
-  return message;
 }
 
 export const api = {
