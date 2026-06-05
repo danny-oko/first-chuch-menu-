@@ -1,0 +1,18 @@
+{
+  "name": "menu",
+  "private": true,
+  "scripts": {
+    "dev": "bun run sync:env && bun scripts/dev.ts",
+    "dev:server": "cd server && bun run dev",
+    "dev:client": "cd client && bun run dev",
+    "sync:env": "bun scripts/sync-env.ts",
+    "build": "cd client && bun run build",
+    "deploy:api": "cd server && bun run deploy",
+    "db:generate": "cd server && bun run db:generate",
+    "db:setup": "cd server && bun run db:setup",
+    "db:migrate:local": "cd server && bun run db:migrate:local",
+    "db:migrate:remote": "cd server && bun run db:migrate:remote",
+    "db:clear:local": "cd server && bun run db:clear:local",
+    "db:clear:remote": "cd server && bun run db:clear:remote"
+  }
+}

@@ -1,6 +1,7 @@
-import { eq } from "drizzle-orm";
+import { desc, eq, inArray } from "drizzle-orm";
 import type { Context } from "hono";
 import { useDB } from "../lib/db/db";
+import { jsonError } from "../lib/api-response";
 import {
   adminAuth,
   createId,
@@ -47,6 +48,40 @@ export async function deleteCategory(c: Context<AppEnv>) {
   const db = useDB(c);
   const id = c.req.param("id");
 
+  const [category] = await db
+    .select()
+    .from(categories)
+    .where(eq(categories.id, id))
+    .limit(1);
+
+  if (!category) {
+    return jsonError(c, "Category not found", 404);
+  }
+
+  const categoryDishes = await db
+    .select({ id: dishes.id })
+    .from(dishes)
+    .where(eq(dishes.categoryId, id));
+
+  if (categoryDishes.length) {
+    const dishIds = categoryDishes.map((d) => d.id);
+    const [ordered] = await db
+      .select({ id: orderItems.id })
+      .from(orderItems)
+      .where(inArray(orderItems.dishId, dishIds))
+      .limit(1);
+
+    if (ordered) {
+      return jsonError(
+        c,
+        "Cannot delete category: dishes in this category have order history",
+        409
+      );
+    }
+
+    await db.delete(dishes).where(eq(dishes.categoryId, id));
+  }
+
   await db.delete(categories).where(eq(categories.id, id));
   return c.json({ success: true });
 }
@@ -77,12 +112,52 @@ export async function createDish(c: Context<AppEnv>) {
     })
     .returning();
 
-  return c.json(dish, 201);
+  const [withCategory] = await db
+    .select({
+      id: dishes.id,
+      categoryId: dishes.categoryId,
+      name: dishes.name,
+      description: dishes.description,
+      price: dishes.price,
+      imageUrl: dishes.imageUrl,
+      createdAt: dishes.createdAt,
+      categoryName: categories.name,
+    })
+    .from(dishes)
+    .leftJoin(categories, eq(dishes.categoryId, categories.id))
+    .where(eq(dishes.id, dish.id))
+    .limit(1);
+
+  return c.json(withCategory ?? dish, 201);
 }
 
 export async function deleteDish(c: Context<AppEnv>) {
   const db = useDB(c);
   const id = c.req.param("id");
+
+  const [dish] = await db
+    .select()
+    .from(dishes)
+    .where(eq(dishes.id, id))
+    .limit(1);
+
+  if (!dish) {
+    return jsonError(c, "Dish not found", 404);
+  }
+
+  const [ordered] = await db
+    .select({ id: orderItems.id })
+    .from(orderItems)
+    .where(eq(orderItems.dishId, id))
+    .limit(1);
+
+  if (ordered) {
+    return jsonError(
+      c,
+      "Cannot delete dish: it exists in past orders",
+      409
+    );
+  }
 
   await db.delete(dishes).where(eq(dishes.id, id));
   return c.json({ success: true });
@@ -119,7 +194,7 @@ export async function getAdminOrders(c: Context<AppEnv>) {
   const allOrders = await db
     .select()
     .from(orders)
-    .orderBy(orders.createdAt);
+    .orderBy(desc(orders.createdAt));
 
   const ordersWithItems = await Promise.all(
     allOrders.map(async (order) => {
@@ -194,7 +269,7 @@ export async function ordersStream(c: Context<AppEnv>) {
             const allOrders = await db
               .select()
               .from(orders)
-              .orderBy(orders.createdAt);
+              .orderBy(desc(orders.createdAt));
 
             const ordersWithItems = await Promise.all(
               allOrders.map(async (order) => {

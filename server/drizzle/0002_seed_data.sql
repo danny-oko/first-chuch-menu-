@@ -1,0 +1,1 @@
+-- Demo seed data removed; add menu items via the admin dashboard.
