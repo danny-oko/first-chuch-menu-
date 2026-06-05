@@ -3,6 +3,7 @@
   "name": "menu-api",
   "main": "src/index.ts",
   "compatibility_date": "2026-04-11",
+  "account_id": "a60e9697809a342d3482149cd0ac135e",
   "dev": {
     "port": 8787,
     "ip": "127.0.0.1"
@@ -11,12 +12,11 @@
     {
       "binding": "DB",
       "database_name": "menu-db",
-      "database_id": "e5a46bd7-3b4b-4d95-9257-e6cf39a95ee9",
+      "database_id": "7ffef3b9-0e3f-4ef9-b245-d3ca2d0c9ef0",
       "migrations_dir": "drizzle"
     }
   ],
   "vars": {
-    "JWT_SECRET": "menu-admin-jwt-secret-change-in-production",
     "CLOUDINARY_CLOUD_NAME": "doxmbmqjm",
     "CLOUDINARY_API_KEY": "957614933964154",
     "CLOUDINARY_UPLOAD_PRESET": "first-church-menu"

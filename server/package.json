@@ -3,14 +3,14 @@
   "type": "module",
   "scripts": {
     "dev": "bun run db:migrate:local && wrangler dev",
-    "deploy": "wrangler deploy --minify",
+    "deploy": "bun run db:migrate:remote && wrangler deploy --minify",
     "cf-typegen": "wrangler types --env-interface CloudflareBindings",
     "generate": "drizzle-kit generate",
     "db:generate": "drizzle-kit generate",
     "db:migrate:local": "wrangler d1 migrations apply menu-db --local",
     "db:migrate:remote": "wrangler d1 migrations apply menu-db --remote",
-    "db:clear:local": "wrangler d1 execute menu-db --local --file=drizzle/clear_data.sql",
-    "db:clear:remote": "wrangler d1 execute menu-db --remote --file=drizzle/clear_data.sql",
+    "db:clear:local": "wrangler d1 execute menu-db --local --file=scripts/clear_data.sql",
+    "db:clear:remote": "wrangler d1 execute menu-db --remote --file=scripts/clear_data.sql",
     "db:setup": "bun run db:migrate:local"
   },
   "dependencies": {
