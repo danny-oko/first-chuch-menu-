@@ -1,0 +1,20 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "menu-api",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-04-11",
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "menu-db",
+      "database_id": "e5a46bd7-3b4b-4d95-9257-e6cf39a95ee9",
+      "migrations_dir": "drizzle"
+    }
+  ],
+  "vars": {
+    "JWT_SECRET": "menu-admin-jwt-secret-change-in-production",
+    "CLOUDINARY_CLOUD_NAME": "doxmbmqjm",
+    "CLOUDINARY_API_KEY": "957614933964154",
+    "CLOUDINARY_UPLOAD_PRESET": "first-church-menu"
+  }
+}
