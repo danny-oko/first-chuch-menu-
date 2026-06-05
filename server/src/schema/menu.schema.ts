@@ -41,9 +41,8 @@ export const orderItems = sqliteTable("order_items", {
   orderId: text("order_id")
     .notNull()
     .references(() => orders.id, { onDelete: "cascade" }),
-  dishId: text("dish_id")
-    .notNull()
-    .references(() => dishes.id),
+  dishId: text("dish_id").references(() => dishes.id, { onDelete: "set null" }),
+  dishName: text("dish_name").notNull(),
   quantity: integer("quantity").notNull(),
   priceAtPurchase: integer("price_at_purchase").notNull(),
 });

@@ -83,7 +83,7 @@ export async function createOrder(c: Context<AppEnv>) {
 
   const dishIds = body.items.map((item) => item.dishId);
   const dbDishes = await db
-    .select({ id: dishes.id, price: dishes.price })
+    .select({ id: dishes.id, price: dishes.price, name: dishes.name })
     .from(dishes)
     .where(inArray(dishes.id, dishIds));
 
@@ -92,6 +92,7 @@ export async function createOrder(c: Context<AppEnv>) {
   }
 
   const priceMap = new Map(dbDishes.map((d) => [d.id, d.price]));
+  const nameMap = new Map(dbDishes.map((d) => [d.id, d.name]));
   let computedTotal = 0;
 
   for (const item of body.items) {
@@ -111,6 +112,7 @@ export async function createOrder(c: Context<AppEnv>) {
     id: crypto.randomUUID(),
     orderId,
     dishId: item.dishId,
+    dishName: nameMap.get(item.dishId) ?? "Unknown",
     quantity: item.quantity,
     priceAtPurchase: item.price,
   }));

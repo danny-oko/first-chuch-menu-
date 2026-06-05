@@ -1,4 +1,4 @@
-import { desc, eq, inArray } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 import type { Context } from "hono";
 import { useDB } from "../lib/db/db";
 import { jsonError } from "../lib/api-response";
@@ -64,21 +64,6 @@ export async function deleteCategory(c: Context<AppEnv>) {
     .where(eq(dishes.categoryId, id));
 
   if (categoryDishes.length) {
-    const dishIds = categoryDishes.map((d) => d.id);
-    const [ordered] = await db
-      .select({ id: orderItems.id })
-      .from(orderItems)
-      .where(inArray(orderItems.dishId, dishIds))
-      .limit(1);
-
-    if (ordered) {
-      return jsonError(
-        c,
-        "Cannot delete category: dishes in this category have order history",
-        409
-      );
-    }
-
     await db.delete(dishes).where(eq(dishes.categoryId, id));
   }
 
@@ -145,20 +130,6 @@ export async function deleteDish(c: Context<AppEnv>) {
     return jsonError(c, "Dish not found", 404);
   }
 
-  const [ordered] = await db
-    .select({ id: orderItems.id })
-    .from(orderItems)
-    .where(eq(orderItems.dishId, id))
-    .limit(1);
-
-  if (ordered) {
-    return jsonError(
-      c,
-      "Cannot delete dish: it exists in past orders",
-      409
-    );
-  }
-
   await db.delete(dishes).where(eq(dishes.id, id));
   return c.json({ success: true });
 }
@@ -204,7 +175,7 @@ export async function getAdminOrders(c: Context<AppEnv>) {
           quantity: orderItems.quantity,
           priceAtPurchase: orderItems.priceAtPurchase,
           dishId: orderItems.dishId,
-          dishName: dishes.name,
+          dishName: orderItems.dishName,
           dishImageUrl: dishes.imageUrl,
         })
         .from(orderItems)
@@ -279,7 +250,7 @@ export async function ordersStream(c: Context<AppEnv>) {
                     quantity: orderItems.quantity,
                     priceAtPurchase: orderItems.priceAtPurchase,
                     dishId: orderItems.dishId,
-                    dishName: dishes.name,
+                    dishName: orderItems.dishName,
                   })
                   .from(orderItems)
                   .leftJoin(dishes, eq(orderItems.dishId, dishes.id))
