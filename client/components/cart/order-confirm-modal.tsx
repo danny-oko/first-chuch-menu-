@@ -1,7 +1,5 @@
 "use client";
 
-import { useState } from "react";
-import { Check, Copy, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -10,9 +8,10 @@ import {
   BANK_NAME,
   buildTransferNote,
 } from "@/lib/order-payment";
-import { formatPrice } from "@/lib/utils";
 import type { CartItem } from "@/lib/types";
-import { cn } from "@/lib/utils";
+import { cn, formatPrice } from "@/lib/utils";
+import { Check, Copy, X } from "lucide-react";
+import { useState } from "react";
 
 type CopyFieldProps = {
   label: string;
@@ -42,7 +41,7 @@ function CopyField({ label, value, copyValue, mono }: CopyFieldProps) {
         <p
           className={cn(
             "min-w-0 flex-1 break-all text-sm font-semibold text-zinc-900",
-            mono && "font-mono"
+            mono && "font-mono",
           )}
         >
           {value}
@@ -51,23 +50,17 @@ function CopyField({ label, value, copyValue, mono }: CopyFieldProps) {
           type="button"
           onClick={handleCopy}
           className={cn(
-            "flex shrink-0 items-center gap-1 rounded-lg px-3 py-2 text-xs font-medium transition-colors",
+            "flex shrink-0 items-center justify-center rounded-lg p-2 transition-colors",
             copied
               ? "bg-green-100 text-green-700"
-              : "bg-black text-white hover:bg-zinc-800"
+              : "bg-black text-white hover:bg-zinc-800",
           )}
-          aria-label={`Copy ${label}`}
+          aria-label={copied ? `${label} copied` : `Copy ${label}`}
         >
           {copied ? (
-            <>
-              <Check className="h-3.5 w-3.5" />
-              Хуулсан
-            </>
+            <Check className="h-4 w-4" />
           ) : (
-            <>
-              <Copy className="h-3.5 w-3.5" />
-              Хуулах
-            </>
+            <Copy className="h-4 w-4" />
           )}
         </button>
       </div>
@@ -146,7 +139,7 @@ export function OrderConfirmModal({
               id="customer-name"
               value={userName}
               onChange={(e) => onUserNameChange(e.target.value)}
-              placeholder="Жишээ нь: Болд"
+              placeholder="Жишээ нь: Дэнни"
               className="mt-1.5"
             />
           </div>
