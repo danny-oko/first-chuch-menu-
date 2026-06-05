@@ -55,5 +55,6 @@ export function createId(): string {
 }
 
 export function formatPrice(cents: number): string {
-  return `$${(cents / 100).toFixed(2)}`;
+  const amount = Math.round(cents / 100);
+  return `${amount.toLocaleString("mn-MN")}₮`;
 }

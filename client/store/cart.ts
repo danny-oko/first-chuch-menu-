@@ -79,3 +79,9 @@ export function useCartItemCount() {
 
   return mounted ? count : 0;
 }
+
+export function useDishCartQuantity(dishId: string) {
+  return useCartStore(
+    (state) => state.items.find((item) => item.dish.id === dishId)?.quantity ?? 0
+  );
+}

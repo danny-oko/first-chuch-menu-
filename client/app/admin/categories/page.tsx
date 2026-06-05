@@ -1,8 +1,5 @@
 "use client";
 
-import { useState } from "react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Trash2 } from "lucide-react";
 import { AdminShell } from "@/components/admin/admin-shell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,6 +7,9 @@ import { Label } from "@/components/ui/label";
 import { api } from "@/lib/api";
 import { getAdminToken } from "@/lib/auth";
 import { t } from "@/lib/i18n";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Trash2 } from "lucide-react";
+import { useState } from "react";
 
 export default function AdminCategoriesPage() {
   const queryClient = useQueryClient();
@@ -42,7 +42,7 @@ export default function AdminCategoriesPage() {
     },
     onError: (err) => {
       setDeleteError(
-        err instanceof Error ? err.message : t.failedDeleteCategory
+        err instanceof Error ? err.message : t.failedDeleteCategory,
       );
     },
     onSettled: () => setDeletingId(null),
@@ -77,7 +77,11 @@ export default function AdminCategoriesPage() {
             onChange={(e) => setName(e.target.value)}
           />
         </div>
-        <Button type="submit" className="rounded-xl" disabled={createMutation.isPending}>
+        <Button
+          type="submit"
+          className="rounded-xl"
+          disabled={createMutation.isPending}
+        >
           {t.add}
         </Button>
       </form>

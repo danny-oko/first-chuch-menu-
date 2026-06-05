@@ -1,15 +1,15 @@
 "use client";
 
-import { useRef, useState } from "react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Trash2, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { api } from "@/lib/api";
 import { getAdminToken } from "@/lib/auth";
-import { formatPrice } from "@/lib/utils";
 import { t } from "@/lib/i18n";
+import { formatPrice } from "@/lib/utils";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Trash2, Upload } from "lucide-react";
+import { useRef, useState } from "react";
 
 export function DishManager() {
   const queryClient = useQueryClient();
@@ -65,9 +65,7 @@ export function DishManager() {
       queryClient.invalidateQueries({ queryKey: ["dishes"] });
     },
     onError: (err) => {
-      setDeleteError(
-        err instanceof Error ? err.message : t.failedDeleteDish
-      );
+      setDeleteError(err instanceof Error ? err.message : t.failedDeleteDish);
     },
     onSettled: () => setDeletingId(null),
   });

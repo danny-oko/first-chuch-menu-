@@ -1,6 +1,5 @@
 import { desc, eq } from "drizzle-orm";
 import type { Context } from "hono";
-import { useDB } from "../lib/db/db";
 import { jsonError } from "../lib/api-response";
 import {
   adminAuth,
@@ -8,6 +7,8 @@ import {
   signAdminToken,
   validateAdminCredentials,
 } from "../lib/auth";
+import type { AppEnv } from "../lib/common/types";
+import { useDB } from "../lib/db/db";
 import {
   categories,
   dishes,
@@ -15,7 +16,6 @@ import {
   orders,
   type OrderStatus,
 } from "../schema/menu.schema";
-import type { AppEnv } from "../lib/common/types";
 
 export async function adminLogin(c: Context<AppEnv>) {
   const body = await c.req.json<{ username: string; password: string }>();
@@ -148,7 +148,7 @@ export async function uploadImage(c: Context<AppEnv>) {
 
   const response = await fetch(
     `https://api.cloudinary.com/v1_1/${c.env.CLOUDINARY_CLOUD_NAME}/image/upload`,
-    { method: "POST", body: cloudinaryForm }
+    { method: "POST", body: cloudinaryForm },
   );
 
   if (!response.ok) {
@@ -156,7 +156,10 @@ export async function uploadImage(c: Context<AppEnv>) {
     return c.json({ error: "Upload failed", details: error }, 500);
   }
 
-  const data = (await response.json()) as { secure_url: string; public_id: string };
+  const data = (await response.json()) as {
+    secure_url: string;
+    public_id: string;
+  };
   return c.json({ url: data.secure_url, publicId: data.public_id });
 }
 
@@ -183,7 +186,7 @@ export async function getAdminOrders(c: Context<AppEnv>) {
         .where(eq(orderItems.orderId, order.id));
 
       return { ...order, items };
-    })
+    }),
   );
 
   return c.json(ordersWithItems);
@@ -229,7 +232,7 @@ export async function ordersStream(c: Context<AppEnv>) {
 
         const send = (data: unknown) => {
           controller.enqueue(
-            encoder.encode(`data: ${JSON.stringify(data)}\n\n`)
+            encoder.encode(`data: ${JSON.stringify(data)}\n\n`),
           );
         };
 
@@ -257,7 +260,7 @@ export async function ordersStream(c: Context<AppEnv>) {
                   .where(eq(orderItems.orderId, order.id));
 
                 return { ...order, items };
-              })
+              }),
             );
 
             const snapshot = JSON.stringify(ordersWithItems);
@@ -287,7 +290,7 @@ export async function ordersStream(c: Context<AppEnv>) {
         "Cache-Control": "no-cache",
         Connection: "keep-alive",
       },
-    }
+    },
   );
 }
 

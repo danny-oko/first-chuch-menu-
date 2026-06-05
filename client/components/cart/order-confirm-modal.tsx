@@ -7,7 +7,7 @@ import { t } from "@/lib/i18n";
 import {
   BANK_ACCOUNT_NUMBER,
   BANK_NAME,
-  buildTransferNote,
+  buildTransferNoteContent,
 } from "@/lib/order-payment";
 import type { CartItem } from "@/lib/types";
 import { cn, formatPrice } from "@/lib/utils";
@@ -18,10 +18,11 @@ type CopyFieldProps = {
   label: string;
   value: string;
   copyValue?: string;
+  subtext?: string;
   mono?: boolean;
 };
 
-function CopyField({ label, value, copyValue, mono }: CopyFieldProps) {
+function CopyField({ label, value, copyValue, subtext, mono }: CopyFieldProps) {
   const [copied, setCopied] = useState(false);
   const textToCopy = copyValue ?? value;
 
@@ -38,15 +39,20 @@ function CopyField({ label, value, copyValue, mono }: CopyFieldProps) {
   return (
     <div className="rounded-xl bg-zinc-50 p-4 ring-1 ring-zinc-100">
       <p className="text-xs font-medium text-zinc-500">{label}</p>
-      <div className="mt-2 flex items-start gap-2">
-        <p
-          className={cn(
-            "min-w-0 flex-1 break-all text-sm font-semibold text-zinc-900",
-            mono && "font-mono",
-          )}
-        >
-          {value}
-        </p>
+      <div className="mt-3 flex items-start gap-3">
+        <div className="min-w-0 flex-1 space-y-1.5">
+          <p
+            className={cn(
+              "break-all text-sm font-semibold leading-relaxed text-zinc-900",
+              mono && "font-mono tracking-wide",
+            )}
+          >
+            {value}
+          </p>
+          {subtext ? (
+            <p className="text-sm leading-relaxed text-zinc-500">{subtext}</p>
+          ) : null}
+        </div>
         <button
           type="button"
           onClick={handleCopy}
@@ -94,11 +100,10 @@ export function OrderConfirmModal({
 }: OrderConfirmModalProps) {
   if (!open) return null;
 
-  const transferNote = userName.trim()
-    ? buildTransferNote(userName, items)
-    : buildTransferNote("...", items).replace("...", t.namePlaceholderShort);
-
-  const accountDisplay = `${BANK_ACCOUNT_NUMBER} ${BANK_NAME}`;
+  const transferNoteContent = buildTransferNoteContent(
+    userName.trim() || t.namePlaceholderShort,
+    items
+  );
 
   return (
     <div className="fixed inset-0 z-[100] flex items-end justify-center p-4 sm:items-center">
@@ -145,12 +150,12 @@ export function OrderConfirmModal({
 
           <CopyField
             label={t.accountNumber}
-            value={accountDisplay}
-            copyValue={BANK_ACCOUNT_NUMBER}
+            value={BANK_ACCOUNT_NUMBER}
+            subtext={BANK_NAME}
             mono
           />
 
-          <CopyField label={t.transferNote} value={transferNote} />
+          <CopyField label={t.transferNote} value={transferNoteContent} />
 
           <div className="flex items-center justify-between rounded-xl border border-zinc-200 px-4 py-3">
             <span className="text-sm text-zinc-500">{t.totalAmount}</span>

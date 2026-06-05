@@ -1,16 +1,11 @@
-import type {
-  Category,
-  CreateOrderPayload,
-  Dish,
-  Order,
-} from "./types";
-import { API_ROUTES } from "./types";
 import { apiUrl } from "./api-config";
 import { formatApiErrorMessage, t } from "./i18n";
+import type { Category, CreateOrderPayload, Dish, Order } from "./types";
+import { API_ROUTES } from "./types";
 
 async function request<T>(
   path: string,
-  options?: RequestInit & { token?: string }
+  options?: RequestInit & { token?: string },
 ): Promise<T> {
   const { token, ...init } = options ?? {};
   const headers: HeadersInit = {
@@ -29,7 +24,9 @@ async function request<T>(
 
   if (!res.ok) {
     const error = await res.json().catch(() => ({ error: res.statusText }));
-    throw new Error(formatApiErrorMessage(error.error ?? t.requestFailed, res.status));
+    throw new Error(
+      formatApiErrorMessage(error.error ?? t.requestFailed, res.status),
+    );
   }
 
   return res.json() as Promise<T>;
@@ -42,7 +39,7 @@ export const api = {
     request<Dish[]>(
       categoryId
         ? `${API_ROUTES.dishes}?categoryId=${categoryId}`
-        : API_ROUTES.dishes
+        : API_ROUTES.dishes,
     ),
   getDish: (id: string) => request<Dish>(API_ROUTES.dish(id)),
   createOrder: (payload: CreateOrderPayload) =>
@@ -83,7 +80,7 @@ export const api = {
       price: number;
       imageUrl: string;
       description?: string;
-    }
+    },
   ) =>
     request<Dish>(API_ROUTES.adminDishes, {
       method: "POST",

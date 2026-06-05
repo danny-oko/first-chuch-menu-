@@ -36,6 +36,7 @@ export const t = {
   decreaseQty: "Тоо хасах",
   increaseQty: "Тоо нэмэх",
   addDishToCart: (name: string) => `${name} сагсанд нэмэх`,
+  inCart: (quantity: number) => `Сагсанд ${quantity} байна`,
 
   // Cart
   yourCart: "Таны сагс",
@@ -43,6 +44,7 @@ export const t = {
   items: "зүйл",
   cartEmpty: "Таны сагс хоосон байна",
   browseMenu: "Цэс үзэх",
+  removeFromCart: (name: string) => `${name} сагсаас хасах`,
   orderSummary: "Захиалгын дүн",
   total: "Нийт",
   placeOrder: "Захиалга өгөх",
@@ -70,7 +72,8 @@ export const t = {
   backToMenu: "Цэс рүү буцах",
 
   // API / errors
-  apiUnreachable: "Серверт холбогдож чадсангүй — холболтоо шалгаад дахин оролдоно уу.",
+  apiUnreachable:
+    "Серверт холбогдож чадсангүй — холболтоо шалгаад дахин оролдоно уу.",
   requestFailed: "Хүсэлт амжилтгүй боллоо",
   categoryNotFound: "Ангилал олдсонгүй. Хуудсыг шинэчлээд дахин оролдоно уу.",
   categoryDeleteBlocked:

@@ -1,14 +1,13 @@
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { logger } from "hono/logger";
-import type { AppEnv } from "./lib/common/types";
 import {
+  adminAuth,
+  adminLogin,
   createCategory,
   createDish,
   deleteCategory,
   deleteDish,
-  adminAuth,
-  adminLogin,
   getAdminOrders,
   ordersStream,
   updateOrderStatus,
@@ -20,6 +19,7 @@ import {
   getDishById,
   getDishes,
 } from "./controllers/menu.controller";
+import type { AppEnv } from "./lib/common/types";
 
 const app = new Hono<AppEnv>();
 
@@ -31,7 +31,7 @@ app.use(
     allowMethods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allowHeaders: ["Content-Type", "Authorization"],
     credentials: true,
-  })
+  }),
 );
 
 app.get("/", (c) =>
@@ -40,11 +40,11 @@ app.get("/", (c) =>
     version: "1.0.0",
     status: "ok",
     database: "cloudflare-d1",
-  })
+  }),
 );
 
 app.get("/api/health", (c) =>
-  c.json({ ok: true, timestamp: new Date().toISOString() })
+  c.json({ ok: true, timestamp: new Date().toISOString() }),
 );
 
 app.get("/api/categories", getCategories);

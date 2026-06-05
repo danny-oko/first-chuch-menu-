@@ -1,12 +1,18 @@
 "use client";
 
-import { useEffect } from "react";
+import { clearAdminToken, getAdminToken } from "@/lib/auth";
+import { t } from "@/lib/i18n";
+import { cn } from "@/lib/utils";
+import {
+  LayoutDashboard,
+  LogOut,
+  Store,
+  Tags,
+  UtensilsCrossed,
+} from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { LayoutDashboard, UtensilsCrossed, Tags, LogOut, Store } from "lucide-react";
-import { getAdminToken, clearAdminToken } from "@/lib/auth";
-import { cn } from "@/lib/utils";
-import { t } from "@/lib/i18n";
+import { useEffect } from "react";
 
 const nav = [
   { href: "/admin", label: t.navOrders, icon: LayoutDashboard },
@@ -65,7 +71,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
                   "flex shrink-0 items-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium transition-colors",
                   pathname === href
                     ? "bg-black text-white"
-                    : "text-zinc-600 hover:bg-zinc-100"
+                    : "text-zinc-600 hover:bg-zinc-100",
                 )}
               >
                 <Icon className="h-4 w-4" />
@@ -75,7 +81,9 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
           </nav>
         </aside>
 
-        <main className="flex-1 px-4 py-6 sm:px-6 lg:px-0 lg:py-0">{children}</main>
+        <main className="flex-1 px-4 py-6 sm:px-6 lg:px-0 lg:py-0">
+          {children}
+        </main>
       </div>
     </div>
   );

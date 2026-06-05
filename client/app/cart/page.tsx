@@ -68,7 +68,7 @@ export default function CartPage() {
 
   return (
     <AppShell>
-      <div className="px-5 pb-28 pt-12 lg:pb-16 lg:pt-8">
+      <div className="px-4 pb-28 pt-10 sm:px-5 lg:pb-16 lg:pt-8">
         <div className="flex items-center gap-3 lg:gap-4">
           <Link
             href="/"
@@ -98,64 +98,74 @@ export default function CartPage() {
           </div>
         ) : (
           <div className="mt-8 lg:mt-10 lg:grid lg:grid-cols-[1fr_380px] lg:items-start lg:gap-10">
-            <ul className="space-y-4">
+            <ul className="space-y-3 sm:space-y-4">
               {items.map((item) => (
                 <li
                   key={item.dish.id}
-                  className="flex items-center gap-4 rounded-2xl bg-white p-4 shadow-sm ring-1 ring-zinc-100 lg:p-5"
+                  className="rounded-2xl bg-white p-3 shadow-sm ring-1 ring-zinc-100 sm:p-4 lg:p-5"
                 >
-                  <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-full lg:h-20 lg:w-20">
-                    <Image
-                      src={item.dish.imageUrl}
-                      alt={item.dish.name}
-                      fill
-                      className="object-cover"
-                      sizes="80px"
-                    />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <h3 className="font-semibold text-zinc-900 lg:text-lg">
-                      {item.dish.name}
-                    </h3>
-                    <p className="text-sm font-bold text-zinc-700 lg:text-base">
-                      {formatPrice(item.dish.price)}
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-2 lg:gap-3">
-                    <button
-                      type="button"
-                      onClick={() =>
-                        updateQuantity(item.dish.id, item.quantity - 1)
-                      }
-                      className="flex h-8 w-8 items-center justify-center rounded-full bg-zinc-100 lg:h-9 lg:w-9"
-                    >
-                      <Minus className="h-3.5 w-3.5" />
-                    </button>
-                    <span className="w-6 text-center text-sm font-semibold lg:w-8 lg:text-base">
-                      {item.quantity}
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() =>
-                        updateQuantity(item.dish.id, item.quantity + 1)
-                      }
-                      className="flex h-8 w-8 items-center justify-center rounded-full bg-black text-white lg:h-9 lg:w-9"
-                    >
-                      <Plus className="h-3.5 w-3.5" />
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => removeItem(item.dish.id)}
-                      className="ml-1 flex h-8 w-8 items-center justify-center text-red-500 lg:ml-2 lg:h-9 lg:w-9"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </button>
+                  <div className="flex gap-3 sm:gap-4">
+                    <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-full sm:h-16 sm:w-16 lg:h-20 lg:w-20">
+                      <Image
+                        src={item.dish.imageUrl}
+                        alt={item.dish.name}
+                        fill
+                        className="object-cover"
+                        sizes="(max-width: 640px) 56px, 80px"
+                      />
+                    </div>
+
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-start justify-between gap-2">
+                        <h3 className="line-clamp-2 text-sm font-semibold leading-snug text-zinc-900 sm:text-base lg:text-lg">
+                          {item.dish.name}
+                        </h3>
+                        <button
+                          type="button"
+                          onClick={() => removeItem(item.dish.id)}
+                          className="-mr-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-red-500 hover:bg-red-50 lg:h-9 lg:w-9"
+                          aria-label={t.removeFromCart(item.dish.name)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      </div>
+
+                      <p className="mt-1 text-sm font-bold text-zinc-700 lg:text-base">
+                        {formatPrice(item.dish.price)}
+                      </p>
+
+                      <div className="mt-3 flex items-center justify-end gap-1.5 sm:gap-2">
+                        <button
+                          type="button"
+                          onClick={() =>
+                            updateQuantity(item.dish.id, item.quantity - 1)
+                          }
+                          className="flex h-8 w-8 items-center justify-center rounded-full bg-zinc-100 lg:h-9 lg:w-9"
+                          aria-label={t.decreaseQty}
+                        >
+                          <Minus className="h-3.5 w-3.5" />
+                        </button>
+                        <span className="min-w-6 text-center text-sm font-semibold lg:min-w-8 lg:text-base">
+                          {item.quantity}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            updateQuantity(item.dish.id, item.quantity + 1)
+                          }
+                          className="flex h-8 w-8 items-center justify-center rounded-full bg-black text-white lg:h-9 lg:w-9"
+                          aria-label={t.increaseQty}
+                        >
+                          <Plus className="h-3.5 w-3.5" />
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 </li>
               ))}
             </ul>
 
-            <div className="mt-8 rounded-2xl bg-white p-5 shadow-sm ring-1 ring-zinc-100 lg:sticky lg:top-8 lg:mt-0 lg:p-6">
+            <div className="mt-6 rounded-2xl bg-white p-4 shadow-sm ring-1 ring-zinc-100 sm:mt-8 sm:p-5 lg:sticky lg:top-8 lg:mt-0 lg:p-6">
               <h2 className="hidden font-semibold text-zinc-900 lg:block lg:text-lg">
                 {t.orderSummary}
               </h2>
