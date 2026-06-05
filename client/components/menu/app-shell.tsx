@@ -4,16 +4,17 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Home, ShoppingBag, Search, Shield } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useCartStore } from "@/store/cart";
+import { useCartItemCount } from "@/store/cart";
 import { t } from "@/lib/i18n";
+import { CartBadge } from "@/components/menu/cart-badge";
 
 export function DesktopNav() {
   const pathname = usePathname();
-  const totalItems = useCartStore((s) => s.totalItems());
+  const cartItemCount = useCartItemCount();
 
   const links = [
     { href: "/", label: t.navMenu, icon: Home },
-    { href: "/cart", label: t.navCart, icon: ShoppingBag, badge: totalItems },
+    { href: "/cart", label: t.navCart, icon: ShoppingBag },
   ];
 
   return (
@@ -27,8 +28,9 @@ export function DesktopNav() {
         </Link>
 
         <nav className="flex items-center gap-2">
-          {links.map(({ href, label, icon: Icon, badge }) => {
+          {links.map(({ href, label, icon: Icon }) => {
             const active = pathname === href;
+            const showCartBadge = href === "/cart" && cartItemCount > 0;
             return (
               <Link
                 key={href}
@@ -40,13 +42,20 @@ export function DesktopNav() {
                     : "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900"
                 )}
               >
-                <Icon className="h-4 w-4" strokeWidth={1.75} />
+                <span className="relative inline-flex">
+                  <Icon className="h-4 w-4" strokeWidth={1.75} />
+                  {showCartBadge && (
+                    <CartBadge
+                      count={cartItemCount}
+                      className="-right-2 -top-2 h-4 min-w-4 px-0.5 text-[9px] leading-none"
+                      ringClassName={cn(
+                        "ring-2",
+                        active ? "ring-black" : "ring-white"
+                      )}
+                    />
+                  )}
+                </span>
                 {label}
-                {badge !== undefined && badge > 0 && (
-                  <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white">
-                    {badge}
-                  </span>
-                )}
               </Link>
             );
           })}

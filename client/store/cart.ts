@@ -1,8 +1,13 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { CartItem, Dish } from "@/lib/types";
+
+function countCartItems(items: CartItem[]) {
+  return items.reduce((sum, item) => sum + item.quantity, 0);
+}
 
 type CartState = {
   items: CartItem[];
@@ -55,9 +60,22 @@ export const useCartStore = create<CartState>()(
           (sum, item) => sum + item.dish.price * item.quantity,
           0
         ),
-      totalItems: () =>
-        get().items.reduce((sum, item) => sum + item.quantity, 0),
+      totalItems: () => countCartItems(get().items),
     }),
-    { name: "menu-cart" }
+    {
+      name: "menu-cart",
+      partialize: (state) => ({ items: state.items }),
+    }
   )
 );
+
+export function useCartItemCount() {
+  const count = useCartStore((state) => countCartItems(state.items));
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  return mounted ? count : 0;
+}

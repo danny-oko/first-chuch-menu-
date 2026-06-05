@@ -1,5 +1,6 @@
 import { DishDetail } from "@/components/menu/dish-detail";
 import { AppShell } from "@/components/menu/app-shell";
+import { BottomNav } from "@/components/menu/bottom-nav";
 
 type PageProps = {
   params: Promise<{ id: string }>;
@@ -10,9 +11,10 @@ export default async function DishPage({ params }: PageProps) {
 
   return (
     <AppShell>
-      <div className="px-5 lg:px-0 lg:py-8">
+      <div className="px-5 pb-28 lg:px-0 lg:pb-12 lg:py-8">
         <DishDetail dishId={id} />
       </div>
+      <BottomNav />
     </AppShell>
   );
 }
