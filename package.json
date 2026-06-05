@@ -1,6 +1,7 @@
 {
   "name": "menu",
   "private": true,
+  "workspaces": ["client"],
   "scripts": {
     "dev": "bun run sync:env && bun scripts/dev.ts",
     "dev:server": "cd server && bun run dev",
@@ -15,5 +16,8 @@
     "db:migrate:remote": "cd server && bun run db:migrate:remote",
     "db:clear:local": "cd server && bun run db:clear:local",
     "db:clear:remote": "cd server && bun run db:clear:remote"
+  },
+  "dependencies": {
+    "next": "16.2.7"
   }
 }

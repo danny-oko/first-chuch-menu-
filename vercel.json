@@ -2,8 +2,8 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "bunVersion": "1.x",
   "framework": "nextjs",
-  "installCommand": "cd client && bun install",
-  "buildCommand": "cd client && bun run build",
+  "installCommand": "bun install",
+  "buildCommand": "bun run vercel-build",
   "env": {
     "API_PROXY_URL": "https://menu-api.danny-otgontsetseg.workers.dev"
   }
