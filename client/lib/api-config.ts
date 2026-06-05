@@ -1,7 +1,9 @@
+import { getWorkerUrl } from "./worker-url";
+
 /**
  * API base URL resolution:
  * - Browser: same-origin `/api/*` → Next.js proxy route → Hono Worker
- * - SSR: direct Worker URL via API_PROXY_URL
+ * - SSR: direct Worker URL via API_PROXY_URL or production fallback
  */
 export function getApiBaseUrl(): string {
   const publicUrl = process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "");
@@ -10,11 +12,7 @@ export function getApiBaseUrl(): string {
     return publicUrl ?? "";
   }
 
-  return (
-    publicUrl ??
-    process.env.API_PROXY_URL?.replace(/\/$/, "") ??
-    "http://127.0.0.1:8787"
-  );
+  return publicUrl ?? getWorkerUrl();
 }
 
 export function apiUrl(path: string): string {

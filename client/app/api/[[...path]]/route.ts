@@ -1,17 +1,15 @@
 import type { NextRequest } from "next/server";
+import { getWorkerUrl } from "@/lib/worker-url";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-
-const WORKER_URL =
-  process.env.API_PROXY_URL?.replace(/\/$/, "") ?? "http://127.0.0.1:8787";
 
 async function proxyRequest(
   request: NextRequest,
   pathSegments: string[]
 ): Promise<Response> {
   const path = pathSegments.length ? pathSegments.join("/") : "";
-  const targetUrl = `${WORKER_URL}/api/${path}${request.nextUrl.search}`;
+  const targetUrl = `${getWorkerUrl()}/api/${path}${request.nextUrl.search}`;
 
   const headers = new Headers(request.headers);
   headers.delete("host");

@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 /**
- * Syncs server env → client env for local development.
+ * Syncs server env → client env.
  * Run from repo root: bun run sync:env
  */
 
@@ -11,17 +11,7 @@ const root = join(import.meta.dir, "..");
 const serverEnv = join(root, "server", ".env.local");
 const clientEnv = join(root, "client", ".env.local");
 
-const WORKER_PORT = "8787";
-
-const clientTemplate = `# Auto-synced for server ↔ client integration
-# Proxies /api/* → Hono Worker (client/app/api/[[...path]]/route.ts)
-API_PROXY_URL=http://127.0.0.1:${WORKER_PORT}
-
-# Same-origin in browser — requests go to /api/* then proxy to Worker
-NEXT_PUBLIC_API_URL=
-
-# Cloudinary (used by server upload endpoint; listed here for reference)
-`;
+const LOCAL_WORKER = "http://127.0.0.1:8787";
 
 function readServerVars(): Record<string, string> {
   if (!existsSync(serverEnv)) return {};
@@ -37,12 +27,20 @@ function readServerVars(): Record<string, string> {
 }
 
 const serverVars = readServerVars();
-let content = clientTemplate;
+const workerUrl = serverVars.WORKER_URL?.replace(/\/$/, "") ?? LOCAL_WORKER;
+
+let content = `# Auto-synced from server/.env.local
+# Next.js proxy (app/api/[[...path]]/route.ts) forwards /api/* to the Worker
+API_PROXY_URL=${workerUrl}
+
+# Browser uses same-origin /api/* — leave empty
+NEXT_PUBLIC_API_URL=
+`;
 
 if (serverVars.CLOUDINARY_CLOUD_NAME) {
   content += `CLOUDINARY_CLOUD_NAME=${serverVars.CLOUDINARY_CLOUD_NAME}\n`;
 }
 
 writeFileSync(clientEnv, content);
-console.log("✓ Synced client/.env.local from server config");
-console.log(`  API_PROXY_URL=http://127.0.0.1:${WORKER_PORT}`);
+console.log("✓ Synced client/.env.local");
+console.log(`  API_PROXY_URL=${workerUrl}`);

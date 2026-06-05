@@ -26,11 +26,7 @@ export function ApiHealthCheck({ children }: { children: React.ReactNode }) {
     <>
       {online === false && (
         <div className="fixed inset-x-0 top-0 z-[100] bg-red-600 px-4 py-2 text-center text-sm font-medium text-white">
-          API offline — from repo root run{" "}
-          <code className="rounded bg-red-700 px-1">bun run dev</code> or{" "}
-          <code className="rounded bg-red-700 px-1">
-            cd server && bun run dev
-          </code>
+          Menu API unreachable — check your connection or try again shortly.
         </div>
       )}
       {children}
