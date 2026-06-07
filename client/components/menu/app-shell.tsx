@@ -1,12 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { Home, ShoppingBag, Search, Shield } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { ArrowLeft, Home, ShoppingBag, Search, Shield } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useCartItemCount } from "@/store/cart";
 import { t } from "@/lib/i18n";
 import { CartBadge } from "@/components/menu/cart-badge";
+import { FloatingCartButton } from "@/components/menu/floating-cart-button";
 
 export function DesktopNav() {
   const pathname = usePathname();
@@ -39,7 +40,7 @@ export function DesktopNav() {
                   "relative flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-medium transition-colors",
                   active
                     ? "bg-black text-white"
-                    : "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900"
+                    : "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900",
                 )}
               >
                 <span className="relative inline-flex">
@@ -50,7 +51,7 @@ export function DesktopNav() {
                       className="-right-2 -top-2 h-4 min-w-4 px-0.5 text-[9px] leading-none"
                       ringClassName={cn(
                         "ring-2",
-                        active ? "ring-black" : "ring-white"
+                        active ? "ring-black" : "ring-white",
                       )}
                     />
                   )}
@@ -79,10 +80,32 @@ export function DesktopNav() {
   );
 }
 
+function MobileBackButton() {
+  const pathname = usePathname();
+  const router = useRouter();
+
+  if (pathname === "/" || pathname.startsWith("/admin")) {
+    return null;
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={() => router.back()}
+      className="fixed left-5 top-5 z-50 flex h-10 w-10 items-center justify-center rounded-full bg-white text-zinc-800 shadow-sm ring-1 ring-zinc-100 lg:hidden"
+      aria-label={t.goBack}
+    >
+      <ArrowLeft className="h-5 w-5" />
+    </button>
+  );
+}
+
 export function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen bg-[#f5f5f5]">
       <DesktopNav />
+      <MobileBackButton />
+      <FloatingCartButton />
       <div className="mx-auto w-full max-w-7xl lg:px-8">{children}</div>
     </div>
   );

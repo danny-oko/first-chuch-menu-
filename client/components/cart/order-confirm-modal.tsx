@@ -102,7 +102,7 @@ export function OrderConfirmModal({
 
   const transferNoteContent = buildTransferNoteContent(
     userName.trim() || t.namePlaceholderShort,
-    items
+    items,
   );
 
   return (
@@ -137,7 +137,7 @@ export function OrderConfirmModal({
         <p className="mt-1 text-sm text-zinc-500">{t.confirmOrderHint}</p>
 
         <div className="mt-5 space-y-3">
-          <div>
+          <div className="relative">
             <Label htmlFor="customer-name">{t.yourName}</Label>
             <Input
               id="customer-name"
@@ -146,6 +146,18 @@ export function OrderConfirmModal({
               placeholder={t.namePlaceholder}
               className="mt-1.5"
             />
+            {!userName.trim() && (
+              <div
+                className="pointer-events-none absolute left-0 top-full z-10 mt-2 w-full"
+                role="status"
+                aria-live="polite"
+              >
+                <div className="rounded-xl bg-white px-3 py-2 text-center text-[11px] leading-snug text-zinc-700 shadow-lg ring-1 ring-zinc-100">
+                  {t.nameConfirmHint}
+                </div>
+                <div className="absolute -top-1.5 left-6 h-0 w-0 border-x-[7px] border-b-[7px] border-x-transparent border-b-white" />
+              </div>
+            )}
           </div>
 
           <CopyField

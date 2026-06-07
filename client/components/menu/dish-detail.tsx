@@ -1,13 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Clock, Minus, MoreVertical, Plus, ShoppingCart } from "lucide-react";
+import { Clock, Minus, MoreVertical, Plus, ShoppingCart } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { api } from "@/lib/api";
 import { formatPrice } from "@/lib/utils";
-import { useCartStore } from "@/store/cart";
+import { useCartStore, useDishCartQuantity } from "@/store/cart";
 import { t } from "@/lib/i18n";
 
 type DishDetailProps = {
@@ -16,21 +15,14 @@ type DishDetailProps = {
 
 export function DishDetail({ dishId }: DishDetailProps) {
   const router = useRouter();
-  const [quantity, setQuantity] = useState(1);
   const addItem = useCartStore((s) => s.addItem);
-  const [added, setAdded] = useState(false);
+  const updateQuantity = useCartStore((s) => s.updateQuantity);
+  const cartQty = useDishCartQuantity(dishId);
 
   const { data: dish, isLoading } = useQuery({
     queryKey: ["dish", dishId],
     queryFn: () => api.getDish(dishId),
   });
-
-  useEffect(() => {
-    if (added) {
-      const t = setTimeout(() => setAdded(false), 600);
-      return () => clearTimeout(t);
-    }
-  }, [added]);
 
   if (isLoading || !dish) {
     return (
@@ -40,24 +32,30 @@ export function DishDetail({ dishId }: DishDetailProps) {
     );
   }
 
-  const total = dish.price * quantity;
+  const displayQty = Math.max(1, cartQty);
+  const total = dish.price * displayQty;
 
-  const handleAddToCart = () => {
-    addItem(dish, quantity);
-    setAdded(true);
+  const handleDecrease = () => {
+    if (cartQty > 1) {
+      updateQuantity(dish.id, cartQty - 1);
+    } else if (cartQty === 1) {
+      updateQuantity(dish.id, 0);
+    }
   };
 
+  const handleIncrease = () => {
+    if (cartQty > 0) {
+      updateQuantity(dish.id, cartQty + 1);
+    } else {
+      addItem(dish, 1);
+    }
+  };
+
+  const goToCart = () => router.push("/cart");
+
   return (
-    <div className="relative min-h-screen pb-32 lg:pb-12">
-      <header className="absolute left-0 right-0 top-0 z-10 flex items-center justify-between px-5 pt-12 lg:static lg:px-0 lg:pt-8">
-        <button
-          type="button"
-          onClick={() => router.back()}
-          className="flex h-10 w-10 items-center justify-center rounded-full bg-white/80 text-zinc-800 backdrop-blur lg:bg-white lg:shadow-sm lg:ring-1 lg:ring-zinc-100"
-          aria-label={t.goBack}
-        >
-          <ArrowLeft className="h-5 w-5" />
-        </button>
+    <div className="relative min-h-screen pb-24 lg:pb-12">
+      <header className="absolute right-0 top-0 z-10 flex justify-end px-5 pt-12 lg:static lg:px-0 lg:pt-8">
         <button
           type="button"
           className="flex h-10 w-10 items-center justify-center rounded-full bg-white/80 text-zinc-800 backdrop-blur lg:bg-white lg:shadow-sm lg:ring-1 lg:ring-zinc-100"
@@ -99,18 +97,18 @@ export function DishDetail({ dishId }: DishDetailProps) {
             <div className="flex shrink-0 items-center gap-3 rounded-full bg-black px-3 py-1.5 text-white lg:px-4 lg:py-2">
               <button
                 type="button"
-                onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+                onClick={handleDecrease}
                 className="flex h-6 w-6 items-center justify-center lg:h-7 lg:w-7"
                 aria-label={t.decreaseQty}
               >
                 <Minus className="h-4 w-4" />
               </button>
               <span className="min-w-[1rem] text-center text-sm font-semibold lg:text-base">
-                {quantity}
+                {displayQty}
               </span>
               <button
                 type="button"
-                onClick={() => setQuantity((q) => q + 1)}
+                onClick={handleIncrease}
                 className="flex h-6 w-6 items-center justify-center lg:h-7 lg:w-7"
                 aria-label={t.increaseQty}
               >
@@ -133,7 +131,7 @@ export function DishDetail({ dishId }: DishDetailProps) {
             </div>
           </div>
 
-          <div className="mt-8 hidden items-center justify-between rounded-2xl bg-white p-6 shadow-sm ring-1 ring-zinc-100 lg:flex">
+          <div className="mt-8 flex items-center justify-between rounded-2xl bg-white p-4 shadow-sm ring-1 ring-zinc-100 lg:p-6">
             <div>
               <p className="text-sm text-zinc-400">{t.totalPrice}</p>
               <p className="text-3xl font-bold text-zinc-900">
@@ -142,44 +140,20 @@ export function DishDetail({ dishId }: DishDetailProps) {
             </div>
             <button
               type="button"
-              onClick={handleAddToCart}
-              className={`flex h-14 items-center gap-3 rounded-2xl bg-black px-8 text-white shadow-lg transition-all hover:bg-zinc-800 active:scale-95 ${added ? "animate-pulse ring-4 ring-black/20" : ""}`}
+              onClick={goToCart}
+              className="hidden items-center gap-3 rounded-2xl bg-black px-8 py-3.5 text-white shadow-lg transition-all hover:bg-zinc-800 active:scale-95 lg:flex"
             >
               <ShoppingCart className="h-5 w-5" />
-              <span className="font-semibold">{t.addToCart}</span>
-              {quantity > 0 && (
+              <span className="font-semibold">{t.goToCart}</span>
+              {cartQty > 0 && (
                 <span className="flex h-6 w-6 items-center justify-center rounded-full bg-red-500 text-xs font-bold">
-                  {quantity}
+                  {cartQty}
                 </span>
               )}
             </button>
           </div>
         </div>
       </div>
-
-      <footer className="fixed bottom-0 left-0 right-0 border-t border-zinc-100 bg-white px-6 py-5 lg:hidden">
-        <div className="mx-auto flex max-w-md items-center justify-between">
-          <div>
-            <p className="text-xs text-zinc-400">{t.totalPrice}</p>
-            <p className="text-2xl font-bold text-zinc-900">
-              {formatPrice(total)}
-            </p>
-          </div>
-          <button
-            type="button"
-            onClick={handleAddToCart}
-            className={`relative flex h-14 w-14 items-center justify-center rounded-2xl bg-black text-white shadow-lg transition-all active:scale-95 ${added ? "animate-pulse ring-4 ring-black/20" : ""}`}
-            aria-label={t.addToCart}
-          >
-            <ShoppingCart className="h-6 w-6" />
-            {quantity > 0 && (
-              <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold">
-                {quantity}
-              </span>
-            )}
-          </button>
-        </div>
-      </footer>
     </div>
   );
 }

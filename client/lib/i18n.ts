@@ -6,6 +6,8 @@ export const t = {
   appSubtitle: "Эзэний өдрийн Кафе",
   navMenu: "Цэс",
   navCart: "Сагс",
+  cartConfirmHint: "Энд дарж захиалгаа баталгаажуулна уу.",
+  nameConfirmHint: "Нэрээ оруулна уу.",
   navHome: "Нүүр",
   navAdmin: "Админ",
   search: "Хайх",
@@ -30,6 +32,7 @@ export const t = {
   deliveryMins: "25 мин",
   totalPrice: "Нийт үнэ",
   addToCart: "Сагсанд нэмэх",
+  goToCart: "Сагс руу",
   goBack: "Буцах",
   moreOptions: "Бусад",
   decreaseQty: "Тоо хасах",
@@ -114,8 +117,7 @@ export const t = {
   registerOrderTitle: "Гар захиалга бүртгэх",
   registerOrderHint:
     "Мөр бүрт нэр, хоол, тоо оруулна. Мөр бүр тусдаа захиалга. Enter дарж хадгална.",
-  registerOrderDialogHint:
-    "Нэг хүний нэр, доор нь хоол бүрт тоо оруулна.",
+  registerOrderDialogHint: "Нэг хүний нэр, доор нь хоол бүрт тоо оруулна.",
   addDishToOrder: "Хоол нэмэх",
   orderItems: "Захиалгын жагсаалт",
   back: "Буцах",

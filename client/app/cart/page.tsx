@@ -3,38 +3,32 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { ArrowLeft, Minus, Plus, Trash2 } from "lucide-react";
+import { useState } from "react";
+import { Minus, Plus, Trash2 } from "lucide-react";
 import { AppShell } from "@/components/menu/app-shell";
-import { BottomNav } from "@/components/menu/bottom-nav";
 import { OrderConfirmModal } from "@/components/cart/order-confirm-modal";
 import { Button } from "@/components/ui/button";
 import { useCartStore } from "@/store/cart";
 import { formatPrice } from "@/lib/utils";
 import { api } from "@/lib/api";
-import { CUSTOMER_NAME_KEY } from "@/lib/order-payment";
 import { t } from "@/lib/i18n";
 
 export default function CartPage() {
   const router = useRouter();
-  const { items, updateQuantity, removeItem, clearCart, totalAmount } =
-    useCartStore();
+  const {
+    items,
+    updateQuantity,
+    removeItem,
+    clearCart,
+    totalAmount,
+    customerName: userName,
+    setCustomerName,
+  } = useCartStore();
   const [showConfirm, setShowConfirm] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [userName, setUserName] = useState("");
 
   const total = totalAmount();
-
-  useEffect(() => {
-    const saved = localStorage.getItem(CUSTOMER_NAME_KEY);
-    if (saved) setUserName(saved);
-  }, []);
-
-  const handleUserNameChange = (name: string) => {
-    setUserName(name);
-    localStorage.setItem(CUSTOMER_NAME_KEY, name);
-  };
 
   const openConfirm = () => {
     if (!items.length) return;
@@ -69,14 +63,8 @@ export default function CartPage() {
 
   return (
     <AppShell>
-      <div className="px-4 pb-28 pt-10 sm:px-5 lg:pb-16 lg:pt-8">
+      <div className="px-4 pb-12 pt-[4.75rem] sm:px-5 lg:pb-16 lg:pt-8">
         <div className="flex items-center gap-3 lg:gap-4">
-          <Link
-            href="/"
-            className="flex h-10 w-10 items-center justify-center rounded-full bg-white text-zinc-800 shadow-sm ring-1 ring-zinc-100 lg:h-11 lg:w-11"
-          >
-            <ArrowLeft className="h-5 w-5" />
-          </Link>
           <div>
             <h1 className="text-xl font-bold text-zinc-900 lg:text-3xl">
               {t.yourCart}
@@ -199,7 +187,7 @@ export default function CartPage() {
         items={items}
         total={total}
         userName={userName}
-        onUserNameChange={handleUserNameChange}
+        onUserNameChange={setCustomerName}
         onClose={() => {
           if (!submitting) setShowConfirm(false);
         }}
@@ -208,7 +196,6 @@ export default function CartPage() {
         error={error}
       />
 
-      <BottomNav />
     </AppShell>
   );
 }

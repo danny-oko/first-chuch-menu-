@@ -8,7 +8,6 @@ import {
   CategoryTabs,
 } from "@/components/menu/category-tabs";
 import { FeaturedDishCard, DishGridCard } from "@/components/menu/dish-card";
-import { BottomNav } from "@/components/menu/bottom-nav";
 import { AppShell } from "@/components/menu/app-shell";
 import { t } from "@/lib/i18n";
 
@@ -39,7 +38,7 @@ export default function HomePage() {
 
   return (
     <AppShell>
-      <div className="px-5 pb-28 pt-4 lg:pb-16 lg:pt-8">
+      <div className="px-5 pb-24 pt-4 lg:pb-16 lg:pt-8">
         <section className="mt-2 lg:mt-0 lg:flex lg:items-end lg:justify-between">
           <div>
             <h1 className="text-3xl font-bold tracking-tight text-zinc-900 lg:text-5xl">
@@ -97,7 +96,6 @@ export default function HomePage() {
           </>
         )}
       </div>
-      <BottomNav />
     </AppShell>
   );
 }

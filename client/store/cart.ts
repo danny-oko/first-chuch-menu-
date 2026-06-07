@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import { CUSTOMER_NAME_KEY } from "@/lib/order-payment";
 import type { CartItem, Dish } from "@/lib/types";
 
 function countCartItems(items: CartItem[]) {
@@ -11,9 +12,11 @@ function countCartItems(items: CartItem[]) {
 
 type CartState = {
   items: CartItem[];
+  customerName: string;
   addItem: (dish: Dish, quantity?: number) => void;
   removeItem: (dishId: string) => void;
   updateQuantity: (dishId: string, quantity: number) => void;
+  setCustomerName: (name: string) => void;
   clearCart: () => void;
   totalAmount: () => number;
   totalItems: () => number;
@@ -23,6 +26,7 @@ export const useCartStore = create<CartState>()(
   persist(
     (set, get) => ({
       items: [],
+      customerName: "",
       addItem: (dish, quantity = 1) => {
         set((state) => {
           const existing = state.items.find((i) => i.dish.id === dish.id);
@@ -54,6 +58,12 @@ export const useCartStore = create<CartState>()(
           ),
         }));
       },
+      setCustomerName: (name) => {
+        set({ customerName: name });
+        if (typeof window !== "undefined") {
+          localStorage.setItem(CUSTOMER_NAME_KEY, name);
+        }
+      },
       clearCart: () => set({ items: [] }),
       totalAmount: () =>
         get().items.reduce(
@@ -64,7 +74,16 @@ export const useCartStore = create<CartState>()(
     }),
     {
       name: "menu-cart",
-      partialize: (state) => ({ items: state.items }),
+      partialize: (state) => ({
+        items: state.items,
+        customerName: state.customerName,
+      }),
+      onRehydrateStorage: () => (state) => {
+        if (!state || state.customerName) return;
+        if (typeof window === "undefined") return;
+        const saved = localStorage.getItem(CUSTOMER_NAME_KEY);
+        if (saved) state.customerName = saved;
+      },
     }
   )
 );
