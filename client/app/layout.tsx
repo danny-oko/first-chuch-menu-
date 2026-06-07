@@ -10,8 +10,8 @@ const geist = Geist({
 });
 
 export const metadata: Metadata = {
-  title: "Амттай цэс | Хоолны захиалга",
-  description: "Шинэ, эрүүл хоол захиалах",
+  title: "Нэгдүгээр цуглаан | Эзэний өдрийн Кафе",
+  description: "Эзэний өдрийн Кафе",
 };
 
 export default function RootLayout({

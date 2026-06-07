@@ -31,8 +31,8 @@ export default function HomePage() {
   const activeCategory = categories.find((c) => c.id === activeCategoryId);
   const headingName =
     activeCategoryId === ALL_CATEGORY_ID
-      ? t.food
-      : (activeCategory?.name ?? t.food);
+      ? t.homeTitle
+      : (activeCategory?.name ?? t.homeTitle);
 
   const featuredDish = dishes[0];
   const gridDishes = dishes.slice(1);
@@ -43,7 +43,7 @@ export default function HomePage() {
         <section className="mt-2 lg:mt-0 lg:flex lg:items-end lg:justify-between">
           <div>
             <h1 className="text-3xl font-bold tracking-tight text-zinc-900 lg:text-5xl">
-              {t.delicious} {headingName}
+              {headingName}
             </h1>
             <p className="mt-1 text-sm text-zinc-500 lg:mt-2 lg:text-base">
               {t.homeTagline}

@@ -2,8 +2,8 @@ import type { OrderStatus } from "./types";
 
 export const t = {
   // Layout & nav
-  appTitle: "Амттай цэс",
-  appSubtitle: "Шинэ, эрүүл хоол",
+  appTitle: "Нэгдүгээр цуглаан",
+  appSubtitle: "Эзэний өдрийн Кафе",
   navMenu: "Цэс",
   navCart: "Сагс",
   navHome: "Нүүр",
@@ -14,9 +14,8 @@ export const t = {
   copied: "Хуулсан",
 
   // Home
-  delicious: "Амттай",
-  food: "хоол",
-  homeTagline: "Бид шинэ, эрүүл хоол бэлтгэдэг",
+  homeTitle: "Нэгдүгээр цуглаан",
+  homeTagline: "Эзэний өдрийн Кафе",
   itemsAvailable: (count: number) => `${count} зүйл байна`,
   categoryAll: "Бүгд",
   noDishesYet: "Одоогоор хоол байхгүй байна.",
