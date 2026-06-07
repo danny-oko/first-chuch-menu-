@@ -58,6 +58,21 @@ export type AdminCreateOrderPayload = {
   status?: OrderStatus;
 };
 
+export type DishSalesRow = {
+  dishId: string | null;
+  dishName: string;
+  dishImageUrl: string | null;
+  categoryName: string | null;
+  unitsSold: number;
+  revenueCents: number;
+};
+
+export type DishSalesReport = {
+  items: DishSalesRow[];
+  totalUnitsSold: number;
+  totalRevenueCents: number;
+};
+
 /** Matches Hono Worker routes in server/src/index.ts */
 export const API_ROUTES = {
   health: "/api/health",
@@ -75,4 +90,5 @@ export const API_ROUTES = {
   adminDishes: "/api/admin/dishes",
   adminDish: (id: string) => `/api/admin/dishes/${id}`,
   adminUpload: "/api/admin/upload",
+  adminDishSalesReport: "/api/admin/reports/dish-sales",
 } as const;

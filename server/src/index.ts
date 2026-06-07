@@ -11,6 +11,7 @@ import {
   deleteDish,
   updateDish,
   deleteOrder,
+  getDishSalesReport,
   getAdminOrders,
   ordersStream,
   updateOrderStatus,
@@ -69,6 +70,7 @@ admin.post("/dishes", createDish);
 admin.patch("/dishes/:id", updateDish);
 admin.delete("/dishes/:id", deleteDish);
 admin.post("/upload", uploadImage);
+admin.get("/reports/dish-sales", getDishSalesReport);
 
 app.route("/api/admin", admin);
 

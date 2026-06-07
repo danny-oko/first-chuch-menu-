@@ -1,4 +1,4 @@
-import { desc, eq } from "drizzle-orm";
+import { desc, eq, sql } from "drizzle-orm";
 import type { Context } from "hono";
 import { jsonError } from "../lib/api-response";
 import {
@@ -401,6 +401,51 @@ export async function deleteOrder(c: Context<AppEnv>) {
 
   await db.delete(orders).where(eq(orders.id, id));
   return c.json({ success: true });
+}
+
+export async function getDishSalesReport(c: Context<AppEnv>) {
+  const db = useDB(c);
+
+  const rows = await db.all<{
+    dishId: string | null;
+    dishName: string;
+    dishImageUrl: string | null;
+    categoryName: string | null;
+    unitsSold: number;
+    revenueCents: number;
+  }>(sql`
+    SELECT
+      oi.dish_id AS dishId,
+      MAX(oi.dish_name) AS dishName,
+      MAX(d.image_url) AS dishImageUrl,
+      MAX(c.name) AS categoryName,
+      SUM(oi.quantity) AS unitsSold,
+      SUM(oi.quantity * oi.price_at_purchase) AS revenueCents
+    FROM order_items oi
+    INNER JOIN orders o ON o.id = oi.order_id
+    LEFT JOIN dishes d ON d.id = oi.dish_id
+    LEFT JOIN categories c ON c.id = d.category_id
+    WHERE o.status != 'cancelled'
+    GROUP BY COALESCE(oi.dish_id, oi.dish_name)
+    ORDER BY unitsSold DESC
+  `);
+
+  const items = rows.map((row) => ({
+    dishId: row.dishId,
+    dishName: row.dishName,
+    dishImageUrl: row.dishImageUrl,
+    categoryName: row.categoryName,
+    unitsSold: Number(row.unitsSold),
+    revenueCents: Number(row.revenueCents),
+  }));
+
+  const totalUnitsSold = items.reduce((sum, row) => sum + row.unitsSold, 0);
+  const totalRevenueCents = items.reduce(
+    (sum, row) => sum + row.revenueCents,
+    0,
+  );
+
+  return c.json({ items, totalUnitsSold, totalRevenueCents });
 }
 
 export async function ordersStream(c: Context<AppEnv>) {

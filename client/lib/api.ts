@@ -5,6 +5,7 @@ import type {
   Category,
   CreateOrderPayload,
   Dish,
+  DishSalesReport,
   Order,
 } from "./types";
 import { API_ROUTES } from "./types";
@@ -130,6 +131,8 @@ export const api = {
       method: "DELETE",
       token,
     }),
+  getDishSalesReport: (token: string) =>
+    request<DishSalesReport>(API_ROUTES.adminDishSalesReport, { token }),
   uploadImage: (token: string, file: File) => {
     const formData = new FormData();
     formData.append("file", file);

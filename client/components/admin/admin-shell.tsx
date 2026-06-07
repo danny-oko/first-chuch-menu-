@@ -3,7 +3,14 @@
 import { clearAdminToken, getAdminToken } from "@/lib/auth";
 import { t } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
-import { LayoutDashboard, LogOut, Store, Tags, UtensilsCrossed } from "lucide-react";
+import {
+  BarChart3,
+  LayoutDashboard,
+  LogOut,
+  Store,
+  Tags,
+  UtensilsCrossed,
+} from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
@@ -12,6 +19,7 @@ const nav = [
   { href: "/admin", label: t.navOrders, icon: LayoutDashboard },
   { href: "/admin/dishes", label: t.navDishes, icon: UtensilsCrossed },
   { href: "/admin/categories", label: t.navCategories, icon: Tags },
+  { href: "/admin/reports", label: t.navReports, icon: BarChart3 },
 ];
 
 export function AdminShell({ children }: { children: React.ReactNode }) {

@@ -93,6 +93,7 @@ export const t = {
   navOrders: "Захиалга",
   navDishes: "Хоол",
   navCategories: "Ангилал",
+  navReports: "Тайлан",
 
   // Admin login
   adminLogin: "Админ нэвтрэх",
@@ -188,6 +189,18 @@ export const t = {
   failedUpdateDish: "Хоол хадгалж чадсангүй",
   deleteDishLabel: (name: string) => `${name} устгах`,
   failedDeleteDish: "Хоол устгаж чадсангүй",
+
+  // Admin reports
+  dishSalesTitle: "Хоол борлуулалтын тайлан",
+  dishSalesHint:
+    "Хоол бүрийн зарагдсан тоо. Цуцлагдсан захиалга тооцоонд орохгүй.",
+  unitsSold: "Зарагдсан тоо",
+  revenue: "Орлого",
+  totalUnitsSold: "Нийт зарагдсан",
+  totalRevenue: "Нийт орлого",
+  noSalesData: "Одоогоор борлуулалт байхгүй байна.",
+  dishSalesRank: "#",
+  loading: "Уншиж байна...",
 } as const;
 
 export const orderStatusLabel: Record<OrderStatus, string> = {
