@@ -265,7 +265,10 @@ export async function uploadImage(c: Context<AppEnv>) {
     secure_url: string;
     public_id: string;
   };
-  return c.json({ url: data.secure_url, publicId: data.public_id });
+  const url = data.secure_url.includes("/upload/")
+    ? data.secure_url.replace("/upload/", "/upload/f_auto,q_auto/")
+    : data.secure_url;
+  return c.json({ url, publicId: data.public_id });
 }
 
 export async function createAdminOrder(c: Context<AppEnv>) {

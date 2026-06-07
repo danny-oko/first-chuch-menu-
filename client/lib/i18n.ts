@@ -175,6 +175,9 @@ export const t = {
   addDishImage: "Зураг нэмэх",
   removeDishImage: "Зураг хасах",
   uploading: "Байршуулж байна...",
+  imageUploadFailed: "Зураг байршуулж чадсангүй. Дахин оролдоно уу.",
+  unsupportedImageType:
+    "Зөвхөн JPG, PNG, WebP, GIF зураг оруулна уу. iPhone HEIC зургийг эхлээд JPG болгон хөрвүүлнэ үү.",
   imageUploaded: "Зураг байршлаа ✓",
   uploadDishImage: "Хоолын зураг байршуулах",
   addDish: "Хоол нэмэх",

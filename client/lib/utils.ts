@@ -16,6 +16,25 @@ export function formatOrderNumber(orderNumber: number): string {
 }
 
 export function getDishImages(dish: Pick<Dish, "imageUrl" | "imageUrls">) {
-  if (dish.imageUrls?.length) return dish.imageUrls;
-  return dish.imageUrl ? [dish.imageUrl] : [];
+  if (dish.imageUrls?.length) return dish.imageUrls.map(toDisplayImageUrl);
+  return dish.imageUrl ? [toDisplayImageUrl(dish.imageUrl)] : [];
+}
+
+const SUPPORTED_IMAGE_TYPES = new Set([
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+  "image/gif",
+]);
+
+export function isSupportedImageFile(file: File): boolean {
+  if (SUPPORTED_IMAGE_TYPES.has(file.type)) return true;
+  return /\.(jpe?g|png|webp|gif)$/i.test(file.name);
+}
+
+export function toDisplayImageUrl(url: string): string {
+  if (!url.includes("res.cloudinary.com/") || url.includes("/f_auto")) {
+    return url;
+  }
+  return url.replace("/upload/", "/upload/f_auto,q_auto/");
 }

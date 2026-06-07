@@ -7,7 +7,12 @@ import { api } from "@/lib/api";
 import { getAdminToken } from "@/lib/auth";
 import { t } from "@/lib/i18n";
 import type { Dish } from "@/lib/types";
-import { formatPrice, getDishImages } from "@/lib/utils";
+import {
+  formatPrice,
+  getDishImages,
+  isSupportedImageFile,
+  toDisplayImageUrl,
+} from "@/lib/utils";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Pencil, Trash2, Upload, X } from "lucide-react";
 import { useRef, useState } from "react";
@@ -30,6 +35,7 @@ export function DishManager() {
   const [uploading, setUploading] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const [saveError, setSaveError] = useState<string | null>(null);
+  const [uploadError, setUploadError] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const { data: categories = [] } = useQuery({
@@ -121,10 +127,25 @@ export function DishManager() {
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+
+    if (!isSupportedImageFile(file)) {
+      setUploadError(t.unsupportedImageType);
+      if (fileRef.current) fileRef.current.value = "";
+      return;
+    }
+
+    setUploadError(null);
     setUploading(true);
     try {
       const { url } = await api.uploadImage(token, file);
-      setForm((f) => ({ ...f, imageUrls: [...f.imageUrls, url] }));
+      setForm((f) => ({
+        ...f,
+        imageUrls: [...f.imageUrls, toDisplayImageUrl(url)],
+      }));
+    } catch (err) {
+      setUploadError(
+        err instanceof Error ? err.message : t.imageUploadFailed,
+      );
     } finally {
       setUploading(false);
       if (fileRef.current) fileRef.current.value = "";
@@ -215,7 +236,7 @@ export function DishManager() {
           <input
             ref={fileRef}
             type="file"
-            accept="image/*"
+            accept="image/jpeg,image/png,image/webp,image/gif"
             className="hidden"
             onChange={handleFileChange}
           />
@@ -229,14 +250,18 @@ export function DishManager() {
             <Upload className="mr-2 h-4 w-4" />
             {uploading ? t.uploading : t.addDishImage}
           </Button>
+          {uploadError && (
+            <p className="mt-2 text-sm text-red-500">{uploadError}</p>
+          )}
           {form.imageUrls.length > 0 && (
             <div className="mt-3 flex flex-wrap gap-3">
               {form.imageUrls.map((url, index) => (
                 <div key={`${url}-${index}`} className="relative">
                   <img
-                    src={url}
+                    src={toDisplayImageUrl(url)}
                     alt=""
                     className="h-20 w-20 rounded-full object-cover ring-2 ring-zinc-100"
+                    onError={() => removeImage(index)}
                   />
                   <button
                     type="button"

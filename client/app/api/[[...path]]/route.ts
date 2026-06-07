@@ -25,7 +25,13 @@ async function proxyRequest(
   };
 
   if (request.method !== "GET" && request.method !== "HEAD") {
-    init.body = await request.arrayBuffer();
+    const contentType = request.headers.get("content-type") ?? "";
+    if (contentType.includes("multipart/form-data") && request.body) {
+      init.body = request.body;
+      (init as RequestInit & { duplex?: "half" }).duplex = "half";
+    } else {
+      init.body = await request.arrayBuffer();
+    }
   }
 
   const response = await fetch(targetUrl, init);
