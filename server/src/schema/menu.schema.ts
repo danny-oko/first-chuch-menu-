@@ -18,6 +18,7 @@ export const dishes = sqliteTable("dishes", {
   description: text("description"),
   price: integer("price").notNull(),
   imageUrl: text("image_url").notNull(),
+  imageUrls: text("image_urls"),
   createdAt: integer("created_at", { mode: "timestamp" })
     .notNull()
     .$defaultFn(() => new Date()),

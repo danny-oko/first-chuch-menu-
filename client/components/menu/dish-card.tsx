@@ -1,9 +1,9 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { Minus, Plus, Trash2 } from "lucide-react";
-import { cn, formatPrice } from "@/lib/utils";
+import { DishImageCarousel } from "@/components/menu/dish-image-carousel";
+import { cn, formatPrice, getDishImages } from "@/lib/utils";
 import type { Dish } from "@/lib/types";
 import { useCartStore, useDishCartQuantity } from "@/store/cart";
 import { t } from "@/lib/i18n";
@@ -11,29 +11,23 @@ import { t } from "@/lib/i18n";
 function DishAddButton({
   dish,
   className,
-  size = "md",
 }: {
   dish: Dish;
   className?: string;
-  size?: "sm" | "md";
 }) {
   const addItem = useCartStore((s) => s.addItem);
-  const addClass =
-    size === "sm" ? "h-8 w-8" : "h-8 w-8 lg:h-9 lg:w-9";
-  const iconClass = "h-3.5 w-3.5";
 
   return (
     <button
       type="button"
       onClick={() => addItem(dish)}
       className={cn(
-        "flex shrink-0 items-center justify-center rounded-full bg-black text-white shadow-md transition-transform active:scale-90",
-        addClass,
+        "flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black text-white shadow-md transition-transform active:scale-90 lg:h-9 lg:w-9",
         className,
       )}
       aria-label={t.addDishToCart(dish.name)}
     >
-      <Plus className={iconClass} />
+      <Plus className="h-3.5 w-3.5" />
     </button>
   );
 }
@@ -65,15 +59,13 @@ function DishRemoveButton({
 function DishQuantityControls({
   dish,
   className,
-  size = "md",
 }: {
   dish: Dish;
   className?: string;
-  size?: "sm" | "md";
 }) {
   const quantity = useDishCartQuantity(dish.id);
   const updateQuantity = useCartStore((s) => s.updateQuantity);
-  const btnClass = size === "sm" ? "h-8 w-8" : "h-8 w-8 lg:h-9 lg:w-9";
+  const btnClass = "h-8 w-8 lg:h-9 lg:w-9";
 
   return (
     <div className={cn("flex items-center gap-1.5 sm:gap-2", className)}>
@@ -88,12 +80,7 @@ function DishQuantityControls({
       >
         <Minus className="h-3.5 w-3.5" />
       </button>
-      <span
-        className={cn(
-          "min-w-6 text-center text-sm font-semibold",
-          size === "md" && "lg:min-w-8 lg:text-base",
-        )}
-      >
+      <span className="min-w-6 text-center text-sm font-semibold lg:min-w-8 lg:text-base">
         {quantity}
       </span>
       <button
@@ -111,47 +98,43 @@ function DishQuantityControls({
   );
 }
 
-type FeaturedDishCardProps = {
+type DishCardProps = {
   dish: Dish;
 };
 
-export function FeaturedDishCard({ dish }: FeaturedDishCardProps) {
+export function DishCard({ dish }: DishCardProps) {
   const quantity = useDishCartQuantity(dish.id);
   const inCart = quantity > 0;
 
   return (
     <div
       className={cn(
-        "relative mt-4 overflow-visible rounded-3xl bg-white p-3 shadow-sm ring-1 sm:p-4 lg:mt-6 lg:p-6",
+        "relative overflow-visible rounded-3xl bg-white p-3 shadow-sm ring-1 sm:p-4 lg:p-5",
         inCart ? "ring-2 ring-black" : "ring-zinc-100",
       )}
     >
-      <div className="flex gap-3 sm:gap-4 lg:gap-8">
+      <div className="flex gap-3 sm:gap-4">
         <Link href={`/dish/${dish.id}`} className="relative shrink-0">
-          <div className="relative -ml-1 h-24 w-24 overflow-hidden rounded-full shadow-lg ring-4 ring-white sm:-ml-2 sm:h-28 sm:w-28 lg:ml-0 lg:h-40 lg:w-40 lg:ring-8">
-            <Image
-              src={dish.imageUrl}
+          <div className="relative h-24 w-24 overflow-hidden rounded-full shadow-lg ring-4 ring-white sm:h-28 sm:w-28 lg:h-32 lg:w-32">
+            <DishImageCarousel
+              images={getDishImages(dish)}
               alt={dish.name}
-              fill
-              className="object-cover"
-              sizes="(max-width: 1024px) 112px, 160px"
+              className="h-full w-full"
+              sizes="(max-width: 1024px) 112px, 128px"
             />
           </div>
         </Link>
 
-        <div className="min-w-0 flex-1 py-1 lg:py-2">
+        <div className="flex min-w-0 flex-1 flex-col py-0.5">
           <div className="flex items-start justify-between gap-2">
             <Link href={`/dish/${dish.id}`} className="min-w-0 flex-1">
-              <p className="text-xs font-medium uppercase tracking-wider text-zinc-400 lg:text-sm">
-                {t.featured}
-              </p>
-              <h3 className="line-clamp-2 text-base font-bold leading-snug text-zinc-900 sm:text-lg lg:text-2xl">
+              <h3 className="line-clamp-2 text-base font-bold leading-snug text-zinc-900 sm:text-lg">
                 {dish.name}
               </h3>
-              <p className="mt-0.5 line-clamp-1 text-sm text-zinc-500 lg:mt-1 lg:line-clamp-2 lg:text-base">
+              <p className="mt-0.5 line-clamp-2 text-sm text-zinc-500">
                 {dish.description ?? dish.categoryName}
               </p>
-              <p className="mt-2 text-base font-bold text-zinc-900 lg:mt-3 lg:text-xl">
+              <p className="mt-2 text-base font-bold text-zinc-900">
                 {formatPrice(dish.price)}
               </p>
             </Link>
@@ -159,11 +142,11 @@ export function FeaturedDishCard({ dish }: FeaturedDishCardProps) {
             {inCart && <DishRemoveButton dish={dish} />}
           </div>
 
-          <div className="mt-3 flex items-center justify-end">
+          <div className="mt-auto flex items-center justify-end pt-3">
             {inCart ? (
-              <DishQuantityControls dish={dish} size="md" />
+              <DishQuantityControls dish={dish} />
             ) : (
-              <DishAddButton dish={dish} size="md" />
+              <DishAddButton dish={dish} />
             )}
           </div>
         </div>
@@ -172,59 +155,8 @@ export function FeaturedDishCard({ dish }: FeaturedDishCardProps) {
   );
 }
 
-type DishGridCardProps = {
-  dish: Dish;
-};
+/** @deprecated Use DishCard */
+export const FeaturedDishCard = DishCard;
 
-export function DishGridCard({ dish }: DishGridCardProps) {
-  const quantity = useDishCartQuantity(dish.id);
-  const inCart = quantity > 0;
-
-  return (
-    <div
-      className={cn(
-        "relative flex flex-col rounded-3xl bg-white p-3 shadow-sm ring-1 transition-shadow hover:shadow-md sm:p-4 lg:p-5",
-        inCart ? "ring-2 ring-black" : "ring-zinc-100",
-      )}
-    >
-      {inCart && (
-        <DishRemoveButton
-          dish={dish}
-          className="absolute right-2 top-2 sm:right-3 sm:top-3"
-        />
-      )}
-
-      <Link
-        href={`/dish/${dish.id}`}
-        className="flex w-full flex-col items-center"
-      >
-        <div className="relative h-24 w-24 overflow-hidden rounded-full shadow-md lg:h-32 lg:w-32">
-          <Image
-            src={dish.imageUrl}
-            alt={dish.name}
-            fill
-            className="object-cover"
-            sizes="(max-width: 1024px) 96px, 128px"
-          />
-        </div>
-        <h3 className="mt-3 line-clamp-2 text-center text-sm font-bold text-zinc-900 lg:text-base">
-          {dish.name}
-        </h3>
-        <p className="mt-0.5 line-clamp-2 text-center text-xs text-zinc-500 lg:text-sm">
-          {dish.description ?? dish.categoryName}
-        </p>
-        <p className="mt-2 text-sm font-bold text-zinc-900 lg:text-base">
-          {formatPrice(dish.price)}
-        </p>
-      </Link>
-
-      <div className="mt-3 flex justify-center">
-        {inCart ? (
-          <DishQuantityControls dish={dish} size="sm" />
-        ) : (
-          <DishAddButton dish={dish} size="sm" />
-        )}
-      </div>
-    </div>
-  );
-}
+/** @deprecated Use DishCard */
+export const DishGridCard = DishCard;

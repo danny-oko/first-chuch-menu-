@@ -9,6 +9,7 @@ import {
   createDish,
   deleteCategory,
   deleteDish,
+  updateDish,
   deleteOrder,
   getAdminOrders,
   ordersStream,
@@ -65,6 +66,7 @@ admin.delete("/orders/:id", deleteOrder);
 admin.post("/categories", createCategory);
 admin.delete("/categories/:id", deleteCategory);
 admin.post("/dishes", createDish);
+admin.patch("/dishes/:id", updateDish);
 admin.delete("/dishes/:id", deleteDish);
 admin.post("/upload", uploadImage);
 

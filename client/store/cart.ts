@@ -13,10 +13,12 @@ function countCartItems(items: CartItem[]) {
 type CartState = {
   items: CartItem[];
   customerName: string;
+  showCartHint: boolean;
   addItem: (dish: Dish, quantity?: number) => void;
   removeItem: (dishId: string) => void;
   updateQuantity: (dishId: string, quantity: number) => void;
   setCustomerName: (name: string) => void;
+  dismissCartHint: () => void;
   clearCart: () => void;
   totalAmount: () => number;
   totalItems: () => number;
@@ -27,11 +29,13 @@ export const useCartStore = create<CartState>()(
     (set, get) => ({
       items: [],
       customerName: "",
+      showCartHint: false,
       addItem: (dish, quantity = 1) => {
         set((state) => {
           const existing = state.items.find((i) => i.dish.id === dish.id);
           if (existing) {
             return {
+              showCartHint: true,
               items: state.items.map((i) =>
                 i.dish.id === dish.id
                   ? { ...i, quantity: i.quantity + quantity }
@@ -39,32 +43,48 @@ export const useCartStore = create<CartState>()(
               ),
             };
           }
-          return { items: [...state.items, { dish, quantity }] };
+          return {
+            showCartHint: true,
+            items: [...state.items, { dish, quantity }],
+          };
         });
       },
       removeItem: (dishId) => {
-        set((state) => ({
-          items: state.items.filter((i) => i.dish.id !== dishId),
-        }));
+        set((state) => {
+          const items = state.items.filter((i) => i.dish.id !== dishId);
+          return {
+            items,
+            showCartHint: items.length > 0 ? state.showCartHint : false,
+          };
+        });
       },
       updateQuantity: (dishId, quantity) => {
         if (quantity <= 0) {
           get().removeItem(dishId);
           return;
         }
-        set((state) => ({
-          items: state.items.map((i) =>
-            i.dish.id === dishId ? { ...i, quantity } : i
-          ),
-        }));
+        set((state) => {
+          const current = state.items.find((i) => i.dish.id === dishId);
+          const increased = current ? quantity > current.quantity : true;
+          return {
+            showCartHint: increased ? true : state.showCartHint,
+            items: state.items.map((i) =>
+              i.dish.id === dishId ? { ...i, quantity } : i
+            ),
+          };
+        });
       },
       setCustomerName: (name) => {
-        set({ customerName: name });
+        set((state) => ({
+          customerName: name,
+          showCartHint: name.trim() ? false : state.showCartHint,
+        }));
         if (typeof window !== "undefined") {
           localStorage.setItem(CUSTOMER_NAME_KEY, name);
         }
       },
-      clearCart: () => set({ items: [] }),
+      dismissCartHint: () => set({ showCartHint: false }),
+      clearCart: () => set({ items: [], showCartHint: false }),
       totalAmount: () =>
         get().items.reduce(
           (sum, item) => sum + item.dish.price * item.quantity,

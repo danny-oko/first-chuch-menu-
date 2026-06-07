@@ -7,7 +7,7 @@ import {
   ALL_CATEGORY_ID,
   CategoryTabs,
 } from "@/components/menu/category-tabs";
-import { FeaturedDishCard, DishGridCard } from "@/components/menu/dish-card";
+import { DishCard } from "@/components/menu/dish-card";
 import { AppShell } from "@/components/menu/app-shell";
 import { t } from "@/lib/i18n";
 
@@ -32,9 +32,6 @@ export default function HomePage() {
     activeCategoryId === ALL_CATEGORY_ID
       ? t.homeTitle
       : (activeCategory?.name ?? t.homeTitle);
-
-  const featuredDish = dishes[0];
-  const gridDishes = dishes.slice(1);
 
   return (
     <AppShell>
@@ -67,15 +64,12 @@ export default function HomePage() {
 
         {loadingDishes ? (
           <div className="mt-8 space-y-4 lg:mt-10">
-            <div className="h-36 animate-pulse rounded-3xl bg-zinc-200 lg:h-48" />
-            <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
-              {[...Array(4)].map((_, i) => (
-                <div
-                  key={i}
-                  className="h-48 animate-pulse rounded-3xl bg-zinc-200 lg:h-56"
-                />
-              ))}
-            </div>
+            {[...Array(3)].map((_, i) => (
+              <div
+                key={i}
+                className="h-36 animate-pulse rounded-3xl bg-zinc-200"
+              />
+            ))}
           </div>
         ) : dishes.length === 0 ? (
           <p className="mt-12 text-center text-sm text-zinc-500 lg:mt-20 lg:text-base">
@@ -84,16 +78,11 @@ export default function HomePage() {
               : t.noDishesInCategory}
           </p>
         ) : (
-          <>
-            {featuredDish && <FeaturedDishCard dish={featuredDish} />}
-            {gridDishes.length > 0 && (
-              <div className="mt-4 grid grid-cols-2 gap-4 md:grid-cols-3 lg:mt-6 lg:grid-cols-4 lg:gap-6">
-                {gridDishes.map((dish) => (
-                  <DishGridCard key={dish.id} dish={dish} />
-                ))}
-              </div>
-            )}
-          </>
+          <div className="mt-4 space-y-4 lg:mt-6">
+            {dishes.map((dish) => (
+              <DishCard key={dish.id} dish={dish} />
+            ))}
+          </div>
         )}
       </div>
     </AppShell>

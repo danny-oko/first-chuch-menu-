@@ -6,25 +6,30 @@ import { Label } from "@/components/ui/label";
 import { api } from "@/lib/api";
 import { getAdminToken } from "@/lib/auth";
 import { t } from "@/lib/i18n";
-import { formatPrice } from "@/lib/utils";
+import type { Dish } from "@/lib/types";
+import { formatPrice, getDishImages } from "@/lib/utils";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Trash2, Upload } from "lucide-react";
+import { Pencil, Trash2, Upload, X } from "lucide-react";
 import { useRef, useState } from "react";
+
+const emptyForm = {
+  name: "",
+  categoryId: "",
+  price: "",
+  description: "",
+  imageUrls: [] as string[],
+};
 
 export function DishManager() {
   const queryClient = useQueryClient();
   const token = getAdminToken() ?? "";
   const fileRef = useRef<HTMLInputElement>(null);
 
-  const [form, setForm] = useState({
-    name: "",
-    categoryId: "",
-    price: "",
-    description: "",
-    imageUrl: "",
-  });
+  const [form, setForm] = useState(emptyForm);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [saveError, setSaveError] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const { data: categories = [] } = useQuery({
@@ -37,24 +42,47 @@ export function DishManager() {
     queryFn: () => api.getDishes(),
   });
 
+  const resetForm = (categoryId = "") => {
+    setForm({ ...emptyForm, categoryId });
+    setEditingId(null);
+    setSaveError(null);
+  };
+
+  const buildPayload = () => {
+    const description = form.description.trim();
+    return {
+      name: form.name.trim(),
+      categoryId: form.categoryId,
+      price: Math.round(parseFloat(form.price) * 100),
+      imageUrls: form.imageUrls,
+      description: description || undefined,
+    };
+  };
+
+  const buildUpdatePayload = () => ({
+    ...buildPayload(),
+    description: form.description.trim() || null,
+  });
+
   const createMutation = useMutation({
-    mutationFn: () =>
-      api.createDish(token, {
-        name: form.name,
-        categoryId: form.categoryId,
-        price: Math.round(parseFloat(form.price) * 100),
-        imageUrl: form.imageUrl,
-        description: form.description || undefined,
-      }),
+    mutationFn: () => api.createDish(token, buildPayload()),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["dishes"] });
-      setForm({
-        name: "",
-        categoryId: form.categoryId,
-        price: "",
-        description: "",
-        imageUrl: "",
-      });
+      resetForm(form.categoryId);
+    },
+    onError: (err) => {
+      setSaveError(err instanceof Error ? err.message : t.requestFailed);
+    },
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: (id: string) => api.updateDish(token, id, buildUpdatePayload()),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["dishes"] });
+      resetForm(form.categoryId);
+    },
+    onError: (err) => {
+      setSaveError(err instanceof Error ? err.message : t.failedUpdateDish);
     },
   });
 
@@ -63,12 +91,26 @@ export function DishManager() {
     onSuccess: () => {
       setDeleteError(null);
       queryClient.invalidateQueries({ queryKey: ["dishes"] });
+      if (editingId) resetForm();
     },
     onError: (err) => {
       setDeleteError(err instanceof Error ? err.message : t.failedDeleteDish);
     },
     onSettled: () => setDeletingId(null),
   });
+
+  const startEdit = (dish: Dish) => {
+    setSaveError(null);
+    setEditingId(dish.id);
+    setForm({
+      name: dish.name,
+      categoryId: dish.categoryId,
+      price: String(dish.price / 100),
+      description: dish.description ?? "",
+      imageUrls: getDishImages(dish),
+    });
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   const handleDelete = (id: string) => {
     setDeleteError(null);
@@ -82,11 +124,21 @@ export function DishManager() {
     setUploading(true);
     try {
       const { url } = await api.uploadImage(token, file);
-      setForm((f) => ({ ...f, imageUrl: url }));
+      setForm((f) => ({ ...f, imageUrls: [...f.imageUrls, url] }));
     } finally {
       setUploading(false);
+      if (fileRef.current) fileRef.current.value = "";
     }
   };
+
+  const removeImage = (index: number) => {
+    setForm((f) => ({
+      ...f,
+      imageUrls: f.imageUrls.filter((_, i) => i !== index),
+    }));
+  };
+
+  const isSaving = createMutation.isPending || updateMutation.isPending;
 
   return (
     <>
@@ -97,9 +149,18 @@ export function DishManager() {
         className="mt-6 grid max-w-2xl gap-4 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-zinc-200"
         onSubmit={(e) => {
           e.preventDefault();
-          createMutation.mutate();
+          setSaveError(null);
+          if (editingId) {
+            updateMutation.mutate(editingId);
+          } else {
+            createMutation.mutate();
+          }
         }}
       >
+        <h3 className="text-sm font-semibold text-zinc-900">
+          {editingId ? t.editingDish : t.addDish}
+        </h3>
+
         <div>
           <Label htmlFor="dish-name">{t.dishName}</Label>
           <Input
@@ -150,7 +211,7 @@ export function DishManager() {
           />
         </div>
         <div>
-          <Label>{t.dishImage}</Label>
+          <Label>{t.dishImages}</Label>
           <input
             ref={fileRef}
             type="file"
@@ -166,20 +227,59 @@ export function DishManager() {
             disabled={uploading}
           >
             <Upload className="mr-2 h-4 w-4" />
-            {uploading
-              ? t.uploading
-              : form.imageUrl
-                ? t.imageUploaded
-                : t.uploadDishImage}
+            {uploading ? t.uploading : t.addDishImage}
           </Button>
+          {form.imageUrls.length > 0 && (
+            <div className="mt-3 flex flex-wrap gap-3">
+              {form.imageUrls.map((url, index) => (
+                <div key={`${url}-${index}`} className="relative">
+                  <img
+                    src={url}
+                    alt=""
+                    className="h-20 w-20 rounded-full object-cover ring-2 ring-zinc-100"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => removeImage(index)}
+                    className="absolute -right-1 -top-1 flex h-6 w-6 items-center justify-center rounded-full bg-black text-white"
+                    aria-label={t.removeDishImage}
+                  >
+                    <X className="h-3.5 w-3.5" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
-        <Button
-          type="submit"
-          className="rounded-xl"
-          disabled={!form.imageUrl || createMutation.isPending}
-        >
-          {t.addDish}
-        </Button>
+
+        {saveError && <p className="text-sm text-red-500">{saveError}</p>}
+
+        <div className="flex flex-wrap gap-2">
+          <Button
+            type="submit"
+            className="rounded-xl"
+            disabled={!form.imageUrls.length || isSaving}
+          >
+            {editingId
+              ? isSaving
+                ? t.registering
+                : t.saveDish
+              : isSaving
+                ? t.registering
+                : t.addDish}
+          </Button>
+          {editingId && (
+            <Button
+              type="button"
+              variant="outline"
+              className="rounded-xl"
+              onClick={() => resetForm()}
+              disabled={isSaving}
+            >
+              {t.cancelEdit}
+            </Button>
+          )}
+        </div>
       </form>
 
       {deleteError && (
@@ -192,10 +292,12 @@ export function DishManager() {
         {dishes.map((dish) => (
           <div
             key={dish.id}
-            className="flex items-center gap-4 rounded-xl bg-white p-4 shadow-sm ring-1 ring-zinc-200"
+            className={`flex items-center gap-4 rounded-xl bg-white p-4 shadow-sm ring-1 ${
+              editingId === dish.id ? "ring-2 ring-black" : "ring-zinc-200"
+            }`}
           >
             <img
-              src={dish.imageUrl}
+              src={getDishImages(dish)[0]}
               alt={dish.name}
               className="h-16 w-16 rounded-full object-cover"
             />
@@ -203,15 +305,31 @@ export function DishManager() {
               <p className="font-semibold text-zinc-900">{dish.name}</p>
               <p className="text-sm text-zinc-500">{dish.categoryName}</p>
               <p className="text-sm font-bold">{formatPrice(dish.price)}</p>
+              {getDishImages(dish).length > 1 && (
+                <p className="text-xs text-zinc-400">
+                  {getDishImages(dish).length} {t.dishImagesCount}
+                </p>
+              )}
             </div>
-            <button
-              type="button"
-              onClick={() => handleDelete(dish.id)}
-              disabled={deletingId === dish.id}
-              className="text-red-500"
-            >
-              <Trash2 className="h-4 w-4" />
-            </button>
+            <div className="flex flex-col gap-2">
+              <button
+                type="button"
+                onClick={() => startEdit(dish)}
+                className="text-zinc-500 hover:text-zinc-900"
+                aria-label={t.editDish}
+              >
+                <Pencil className="h-4 w-4" />
+              </button>
+              <button
+                type="button"
+                onClick={() => handleDelete(dish.id)}
+                disabled={deletingId === dish.id}
+                className="text-red-500 hover:text-red-700 disabled:opacity-40"
+                aria-label={t.deleteDishLabel(dish.name)}
+              >
+                <Trash2 className="h-4 w-4" />
+              </button>
+            </div>
           </div>
         ))}
       </div>

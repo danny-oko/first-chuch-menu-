@@ -69,6 +69,7 @@ export const t = {
 
   // Checkout success
   orderPlaced: "Захиалга амжилттай!",
+  yourOrderNumberLabel: "Таны захиалгын дугаар",
   orderPlacedHint:
     "Таны захиалгыг гал тогоо руу илгээлээ. Удахгүй бэлэн болно.",
   backToMenu: "Цэс рүү буцах",
@@ -78,6 +79,7 @@ export const t = {
     "Серверт холбогдож чадсангүй — холболтоо шалгаад дахин оролдоно уу.",
   requestFailed: "Хүсэлт амжилтгүй боллоо",
   categoryNotFound: "Ангилал олдсонгүй. Хуудсыг шинэчлээд дахин оролдоно уу.",
+  dishNotFound: "Хоол олдсонгүй. Хуудсыг шинэчлээд дахин оролдоно уу.",
   categoryDeleteBlocked:
     "Энэ ангиллыг устгах боломжгүй — өмнөх захиалгад орсон хоол агуулсан байна.",
   dishDeleteBlocked:
@@ -127,7 +129,6 @@ export const t = {
   pressEnterToSave: "Enter дарж хадгалах",
   customerNameRequired: "Хэрэглэгчийн нэрийг оруулна уу",
   ordersCreated: (count: number) => `${count} захиалга бүртгэгдлээ`,
-  orderNumberLabel: (n: number) => `Захиалга ${n}`,
   registerOrderSuccess: "Захиалга амжилттай бүртгэгдлээ",
   registerOrderFailed: "Захиалга бүртгэж чадсангүй",
   addRow: "Мөр нэмэх",
@@ -162,17 +163,27 @@ export const t = {
 
   // Admin dishes
   dishesTitle: "Хоол",
-  dishesHint: "Цэсний зүйлсийг нэмж, удирдах",
+  dishesHint: "Цэсний зүйлсийг нэмж, засаж, удирдах",
   dishName: "Нэр",
   dishCategory: "Ангилал",
   selectCategory: "Ангилал сонгох",
   dishPrice: "Үнэ (₮)",
   dishDescription: "Тайлбар",
   dishImage: "Зураг",
+  dishImages: "Зургууд",
+  dishImagesCount: "зураг",
+  addDishImage: "Зураг нэмэх",
+  removeDishImage: "Зураг хасах",
   uploading: "Байршуулж байна...",
   imageUploaded: "Зураг байршлаа ✓",
   uploadDishImage: "Хоолын зураг байршуулах",
   addDish: "Хоол нэмэх",
+  editDish: "Засах",
+  saveDish: "Хадгалах",
+  cancelEdit: "Болих",
+  editingDish: "Хоол засах",
+  failedUpdateDish: "Хоол хадгалж чадсангүй",
+  deleteDishLabel: (name: string) => `${name} устгах`,
   failedDeleteDish: "Хоол устгаж чадсангүй",
 } as const;
 
@@ -194,6 +205,7 @@ export function formatApiErrorMessage(message: string, status: number): string {
   if (message === "Cannot delete dish: it exists in past orders") {
     return t.dishDeleteBlocked;
   }
+  if (message === "Dish not found") return t.dishNotFound;
   if (message === "Invalid credentials") return t.loginFailed;
   if (message === "Customer name is required") return t.customerNameRequired;
   if (message === "Order not found") return t.failedDeleteOrder;

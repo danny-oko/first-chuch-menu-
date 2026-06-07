@@ -36,6 +36,13 @@
       "when": 1749153600000,
       "tag": "0004_order_number_customer_name",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1749157200000,
+      "tag": "0005_dish_image_urls",
+      "breakpoints": true
     }
   ]
 }

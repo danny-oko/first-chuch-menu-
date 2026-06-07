@@ -100,12 +100,28 @@ export const api = {
       name: string;
       categoryId: string;
       price: number;
-      imageUrl: string;
+      imageUrls: string[];
       description?: string;
     },
   ) =>
     request<Dish>(API_ROUTES.adminDishes, {
       method: "POST",
+      token,
+      body: JSON.stringify(data),
+    }),
+  updateDish: (
+    token: string,
+    id: string,
+    data: {
+      name: string;
+      categoryId: string;
+      price: number;
+      imageUrls: string[];
+      description?: string | null;
+    },
+  ) =>
+    request<Dish>(API_ROUTES.adminDish(id), {
+      method: "PATCH",
       token,
       body: JSON.stringify(data),
     }),

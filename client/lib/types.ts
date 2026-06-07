@@ -11,6 +11,7 @@ export type Dish = {
   description: string | null;
   price: number;
   imageUrl: string;
+  imageUrls: string[];
   createdAt: string;
   categoryName: string | null;
 };

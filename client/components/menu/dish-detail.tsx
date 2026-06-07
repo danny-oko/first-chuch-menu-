@@ -1,11 +1,11 @@
 "use client";
 
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Clock, Minus, MoreVertical, Plus, ShoppingCart } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
+import { DishImageCarousel } from "@/components/menu/dish-image-carousel";
 import { api } from "@/lib/api";
-import { formatPrice } from "@/lib/utils";
+import { formatPrice, getDishImages } from "@/lib/utils";
 import { useCartStore, useDishCartQuantity } from "@/store/cart";
 import { t } from "@/lib/i18n";
 
@@ -70,19 +70,13 @@ export function DishDetail({ dishId }: DishDetailProps) {
           <div className="relative h-56 w-56 lg:h-80 lg:w-80">
             <div className="absolute inset-0 rounded-full bg-white shadow-xl" />
             <div className="relative h-full w-full overflow-hidden rounded-full ring-4 ring-white lg:ring-8">
-              <Image
-                src={dish.imageUrl}
+              <DishImageCarousel
+                images={getDishImages(dish)}
                 alt={dish.name}
-                fill
-                className="object-cover"
-                priority
+                className="h-full w-full"
                 sizes="(max-width: 1024px) 224px, 320px"
               />
             </div>
-          </div>
-          <div className="mt-4 flex gap-1.5 lg:mt-6">
-            <span className="h-1.5 w-4 rounded-full bg-black" />
-            <span className="h-1.5 w-1.5 rounded-full bg-zinc-300" />
           </div>
         </div>
 

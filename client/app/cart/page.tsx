@@ -7,6 +7,7 @@ import { useState } from "react";
 import { Minus, Plus, Trash2 } from "lucide-react";
 import { AppShell } from "@/components/menu/app-shell";
 import { OrderConfirmModal } from "@/components/cart/order-confirm-modal";
+import { OrderSuccessDialog } from "@/components/cart/order-success-dialog";
 import { Button } from "@/components/ui/button";
 import { useCartStore } from "@/store/cart";
 import { formatPrice } from "@/lib/utils";
@@ -27,6 +28,9 @@ export default function CartPage() {
   const [showConfirm, setShowConfirm] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [successOrderNumber, setSuccessOrderNumber] = useState<number | null>(
+    null,
+  );
 
   const total = totalAmount();
 
@@ -42,7 +46,7 @@ export default function CartPage() {
     setError(null);
 
     try {
-      await api.createOrder({
+      const { order } = await api.createOrder({
         items: items.map((item) => ({
           dishId: item.dish.id,
           quantity: item.quantity,
@@ -53,7 +57,7 @@ export default function CartPage() {
       });
       clearCart();
       setShowConfirm(false);
-      router.push("/checkout/success");
+      setSuccessOrderNumber(order.orderNumber);
     } catch (err) {
       setError(err instanceof Error ? err.message : t.checkoutFailed);
     } finally {
@@ -196,6 +200,14 @@ export default function CartPage() {
         error={error}
       />
 
+      <OrderSuccessDialog
+        open={successOrderNumber !== null}
+        orderNumber={successOrderNumber ?? 0}
+        onClose={() => {
+          setSuccessOrderNumber(null);
+          router.push("/");
+        }}
+      />
     </AppShell>
   );
 }

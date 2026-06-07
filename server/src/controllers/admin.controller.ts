@@ -12,6 +12,11 @@ import {
   insertOrder,
   OrderValidationError,
 } from "../lib/create-order";
+import {
+  formatDishResponse,
+  normalizeImageUrls,
+  serializeImageUrls,
+} from "../lib/dish-images";
 import { useDB } from "../lib/db/db";
 import {
   categories,
@@ -81,11 +86,14 @@ export async function createDish(c: Context<AppEnv>) {
     name: string;
     categoryId: string;
     price: number;
-    imageUrl: string;
+    imageUrl?: string;
+    imageUrls?: string[];
     description?: string;
   }>();
 
-  if (!body.name || !body.categoryId || !body.imageUrl || body.price <= 0) {
+  const urls = normalizeImageUrls(body.imageUrls, body.imageUrl);
+
+  if (!body.name || !body.categoryId || !urls.length || body.price <= 0) {
     return c.json({ error: "Invalid dish payload" }, 400);
   }
 
@@ -96,7 +104,8 @@ export async function createDish(c: Context<AppEnv>) {
       name: body.name,
       categoryId: body.categoryId,
       price: body.price,
-      imageUrl: body.imageUrl,
+      imageUrl: urls[0],
+      imageUrls: serializeImageUrls(urls),
       description: body.description ?? null,
     })
     .returning();
@@ -109,6 +118,7 @@ export async function createDish(c: Context<AppEnv>) {
       description: dishes.description,
       price: dishes.price,
       imageUrl: dishes.imageUrl,
+      imageUrls: dishes.imageUrls,
       createdAt: dishes.createdAt,
       categoryName: categories.name,
     })
@@ -117,7 +127,98 @@ export async function createDish(c: Context<AppEnv>) {
     .where(eq(dishes.id, dish.id))
     .limit(1);
 
-  return c.json(withCategory ?? dish, 201);
+  return c.json(formatDishResponse(withCategory ?? dish), 201);
+}
+
+export async function updateDish(c: Context<AppEnv>) {
+  const db = useDB(c);
+  const id = c.req.param("id");
+  const body = await c.req.json<{
+    name?: string;
+    categoryId?: string;
+    price?: number;
+    imageUrl?: string;
+    imageUrls?: string[];
+    description?: string | null;
+  }>();
+
+  const [existing] = await db
+    .select()
+    .from(dishes)
+    .where(eq(dishes.id, id))
+    .limit(1);
+
+  if (!existing) {
+    return jsonError(c, "Dish not found", 404);
+  }
+
+  const updates: {
+    name?: string;
+    categoryId?: string;
+    price?: number;
+    imageUrl?: string;
+    imageUrls?: string;
+    description?: string | null;
+  } = {};
+
+  if (body.name !== undefined) {
+    if (!body.name.trim()) {
+      return jsonError(c, "Invalid dish payload", 400);
+    }
+    updates.name = body.name.trim();
+  }
+
+  if (body.categoryId !== undefined) {
+    if (!body.categoryId) {
+      return jsonError(c, "Invalid dish payload", 400);
+    }
+    updates.categoryId = body.categoryId;
+  }
+
+  if (body.price !== undefined) {
+    if (body.price <= 0) {
+      return jsonError(c, "Invalid dish payload", 400);
+    }
+    updates.price = body.price;
+  }
+
+  if (body.imageUrls !== undefined || body.imageUrl !== undefined) {
+    const urls = normalizeImageUrls(body.imageUrls, body.imageUrl);
+    if (!urls.length) {
+      return jsonError(c, "Invalid dish payload", 400);
+    }
+    updates.imageUrl = urls[0];
+    updates.imageUrls = serializeImageUrls(urls);
+  }
+
+  if (body.description !== undefined) {
+    updates.description = body.description?.trim() || null;
+  }
+
+  if (!Object.keys(updates).length) {
+    return jsonError(c, "No updates provided", 400);
+  }
+
+  await db.update(dishes).set(updates).where(eq(dishes.id, id));
+
+  const [withCategory] = await db
+    .select({
+      id: dishes.id,
+      categoryId: dishes.categoryId,
+      name: dishes.name,
+      description: dishes.description,
+      price: dishes.price,
+      imageUrl: dishes.imageUrl,
+      imageUrls: dishes.imageUrls,
+      createdAt: dishes.createdAt,
+      categoryName: categories.name,
+    })
+    .from(dishes)
+    .leftJoin(categories, eq(dishes.categoryId, categories.id))
+    .where(eq(dishes.id, id))
+    .limit(1);
+
+  return c.json(formatDishResponse(withCategory ?? existing));
 }
 
 export async function deleteDish(c: Context<AppEnv>) {

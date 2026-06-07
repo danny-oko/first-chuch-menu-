@@ -2,12 +2,25 @@ import { eq, inArray } from "drizzle-orm";
 import type { Context } from "hono";
 import { useDB } from "../lib/db/db";
 import { jsonError } from "../lib/api-response";
+import { formatDishResponse } from "../lib/dish-images";
 import {
   insertOrder,
   OrderValidationError,
 } from "../lib/create-order";
 import { categories, dishes } from "../schema/menu.schema";
 import type { AppEnv } from "../lib/common/types";
+
+const dishSelect = {
+  id: dishes.id,
+  categoryId: dishes.categoryId,
+  name: dishes.name,
+  description: dishes.description,
+  price: dishes.price,
+  imageUrl: dishes.imageUrl,
+  imageUrls: dishes.imageUrls,
+  createdAt: dishes.createdAt,
+  categoryName: categories.name,
+};
 
 export async function getCategories(c: Context<AppEnv>) {
   const db = useDB(c);
@@ -20,16 +33,7 @@ export async function getDishes(c: Context<AppEnv>) {
   const categoryId = c.req.query("categoryId");
 
   const query = db
-    .select({
-      id: dishes.id,
-      categoryId: dishes.categoryId,
-      name: dishes.name,
-      description: dishes.description,
-      price: dishes.price,
-      imageUrl: dishes.imageUrl,
-      createdAt: dishes.createdAt,
-      categoryName: categories.name,
-    })
+    .select(dishSelect)
     .from(dishes)
     .leftJoin(categories, eq(dishes.categoryId, categories.id))
     .orderBy(dishes.name);
@@ -38,7 +42,7 @@ export async function getDishes(c: Context<AppEnv>) {
     ? await query.where(eq(dishes.categoryId, categoryId))
     : await query;
 
-  return c.json(result);
+  return c.json(result.map(formatDishResponse));
 }
 
 export async function getDishById(c: Context<AppEnv>) {
@@ -46,16 +50,7 @@ export async function getDishById(c: Context<AppEnv>) {
   const id = c.req.param("id");
 
   const [dish] = await db
-    .select({
-      id: dishes.id,
-      categoryId: dishes.categoryId,
-      name: dishes.name,
-      description: dishes.description,
-      price: dishes.price,
-      imageUrl: dishes.imageUrl,
-      createdAt: dishes.createdAt,
-      categoryName: categories.name,
-    })
+    .select(dishSelect)
     .from(dishes)
     .leftJoin(categories, eq(dishes.categoryId, categories.id))
     .where(eq(dishes.id, id))
@@ -65,7 +60,7 @@ export async function getDishById(c: Context<AppEnv>) {
     return jsonError(c, "Dish not found", 404);
   }
 
-  return c.json(dish);
+  return c.json(formatDishResponse(dish));
 }
 
 export async function createOrder(c: Context<AppEnv>) {
