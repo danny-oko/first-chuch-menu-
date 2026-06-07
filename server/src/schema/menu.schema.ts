@@ -25,6 +25,8 @@ export const dishes = sqliteTable("dishes", {
 
 export const orders = sqliteTable("orders", {
   id: text("id").primaryKey(),
+  orderNumber: integer("order_number").notNull().unique(),
+  customerName: text("customer_name"),
   totalAmount: integer("total_amount").notNull(),
   status: text("status", {
     enum: ["pending", "preparing", "completed", "cancelled"],

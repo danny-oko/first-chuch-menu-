@@ -1,6 +1,12 @@
 import { apiUrl } from "./api-config";
 import { formatApiErrorMessage, t } from "./i18n";
-import type { Category, CreateOrderPayload, Dish, Order } from "./types";
+import type {
+  AdminCreateOrderPayload,
+  Category,
+  CreateOrderPayload,
+  Dish,
+  Order,
+} from "./types";
 import { API_ROUTES } from "./types";
 
 async function request<T>(
@@ -55,11 +61,27 @@ export const api = {
     }),
   getAdminOrders: (token: string) =>
     request<Order[]>(API_ROUTES.adminOrders, { token }),
+  createAdminOrder: async (token: string, payload: AdminCreateOrderPayload) => {
+    const result = await request<Order | { orders: Order[] }>(
+      API_ROUTES.adminCreateOrder,
+      {
+        method: "POST",
+        token,
+        body: JSON.stringify(payload),
+      },
+    );
+    return "orders" in result ? result.orders : [result];
+  },
   updateOrderStatus: (token: string, id: string, status: Order["status"]) =>
     request<Order>(API_ROUTES.adminOrder(id), {
       method: "PATCH",
       token,
       body: JSON.stringify({ status }),
+    }),
+  deleteAdminOrder: (token: string, id: string) =>
+    request<{ success: boolean }>(API_ROUTES.adminOrder(id), {
+      method: "DELETE",
+      token,
     }),
   createCategory: (token: string, name: string) =>
     request<Category>(API_ROUTES.adminCategories, {

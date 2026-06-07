@@ -9,3 +9,7 @@ export function formatPrice(cents: number): string {
   const amount = Math.round(cents / 100);
   return `${amount.toLocaleString("mn-MN")}₮`;
 }
+
+export function formatOrderNumber(orderNumber: number): string {
+  return `#${orderNumber}`;
+}

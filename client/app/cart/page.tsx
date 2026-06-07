@@ -55,6 +55,7 @@ export default function CartPage() {
           price: item.dish.price,
         })),
         totalAmount: total,
+        customerName: userName.trim(),
       });
       clearCart();
       setShowConfirm(false);

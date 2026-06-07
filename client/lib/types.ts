@@ -28,6 +28,8 @@ export type OrderItem = {
 
 export type Order = {
   id: string;
+  orderNumber: number;
+  customerName: string | null;
   totalAmount: number;
   status: OrderStatus;
   createdAt: string;
@@ -42,6 +44,17 @@ export type CartItem = {
 export type CreateOrderPayload = {
   items: Array<{ dishId: string; quantity: number; price: number }>;
   totalAmount: number;
+  customerName?: string;
+};
+
+export type AdminCreateOrderEntry = {
+  customerName: string;
+  items: Array<{ dishId: string; quantity: number }>;
+};
+
+export type AdminCreateOrderPayload = {
+  orders: AdminCreateOrderEntry[];
+  status?: OrderStatus;
 };
 
 /** Matches Hono Worker routes in server/src/index.ts */
@@ -53,6 +66,7 @@ export const API_ROUTES = {
   orders: "/api/orders",
   adminLogin: "/api/admin/login",
   adminOrders: "/api/admin/orders",
+  adminCreateOrder: "/api/admin/orders",
   adminOrdersStream: "/api/admin/orders/stream",
   adminOrder: (id: string) => `/api/admin/orders/${id}`,
   adminCategories: "/api/admin/categories",

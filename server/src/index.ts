@@ -4,10 +4,12 @@ import { logger } from "hono/logger";
 import {
   adminAuth,
   adminLogin,
+  createAdminOrder,
   createCategory,
   createDish,
   deleteCategory,
   deleteDish,
+  deleteOrder,
   getAdminOrders,
   ordersStream,
   updateOrderStatus,
@@ -56,8 +58,10 @@ app.post("/api/admin/login", adminLogin);
 const admin = new Hono<AppEnv>();
 admin.use("*", adminAuth);
 admin.get("/orders", getAdminOrders);
+admin.post("/orders", createAdminOrder);
 admin.get("/orders/stream", ordersStream);
 admin.patch("/orders/:id", updateOrderStatus);
+admin.delete("/orders/:id", deleteOrder);
 admin.post("/categories", createCategory);
 admin.delete("/categories/:id", deleteCategory);
 admin.post("/dishes", createDish);

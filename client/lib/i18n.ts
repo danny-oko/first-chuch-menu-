@@ -108,6 +108,46 @@ export const t = {
   recentlyCompleted: "Саяхан дууссан",
   acceptOrder: "Зөвшөөрөх",
   completeOrder: "Дуусгах",
+  deleteOrder: "Устгах",
+  deleteOrderLabel: (orderNumber: number) => `Захиалга ${orderNumber} устгах`,
+  failedDeleteOrder: "Захиалга устгаж чадсангүй",
+  registerOrder: "Захиалга бүртгэх",
+  registerOrderTitle: "Гар захиалга бүртгэх",
+  registerOrderHint:
+    "Мөр бүрт нэр, хоол, тоо оруулна. Мөр бүр тусдаа захиалга. Enter дарж хадгална.",
+  registerOrderDialogHint:
+    "Нэг хүний нэр, доор нь хоол бүрт тоо оруулна.",
+  addDishToOrder: "Хоол нэмэх",
+  orderItems: "Захиалгын жагсаалт",
+  back: "Буцах",
+  registerShortcutKey: "Shift+F",
+  consumerName: "Хэрэглэгчийн нэр",
+  consumerNamePlaceholder: "Жишээ нь: Дэнни",
+  pressEnterToSave: "Enter дарж хадгалах",
+  customerNameRequired: "Хэрэглэгчийн нэрийг оруулна уу",
+  ordersCreated: (count: number) => `${count} захиалга бүртгэгдлээ`,
+  orderNumberLabel: (n: number) => `Захиалга ${n}`,
+  registerOrderSuccess: "Захиалга амжилттай бүртгэгдлээ",
+  registerOrderFailed: "Захиалга бүртгэж чадсангүй",
+  addRow: "Мөр нэмэх",
+  clearRows: "Цэвэрлэх",
+  rowNumber: "#",
+  colCustomerName: "Нэр",
+  colDish: "Хоол",
+  ordersToRegister: "Бүртгэх захиалга",
+  registerRowRequired: "Дор хаяж нэг мөр бөглөнө үү (нэр, хоол, тоо)",
+  completeRowRequired: "Бөглөсөн мөрөнд нэр, хоол, тоо бүгд шаардлагатай",
+  colQuantity: "Тоо",
+  colUnitPrice: "Үнэ",
+  colSubtotal: "Дүн",
+  colActions: "",
+  dishSearchPlaceholder: "Хоол хайх...",
+  noDishMatches: "Хоол олдсонгүй",
+  selectDishFirst: "Эхлээд хоол сонгоно уу",
+  registerSubmit: "Захиалга хадгалах",
+  registering: "Хадгалж байна...",
+  goToOrderBoard: "Захиалгын самбар руу",
+  totalRows: (count: number) => `${count} мөр`,
 
   // Admin categories
   categoriesTitle: "Ангилал",
@@ -154,6 +194,8 @@ export function formatApiErrorMessage(message: string, status: number): string {
     return t.dishDeleteBlocked;
   }
   if (message === "Invalid credentials") return t.loginFailed;
+  if (message === "Customer name is required") return t.customerNameRequired;
+  if (message === "Order not found") return t.failedDeleteOrder;
   if (status >= 500) return t.serverError;
   return message;
 }

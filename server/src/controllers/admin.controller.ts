@@ -8,6 +8,10 @@ import {
   validateAdminCredentials,
 } from "../lib/auth";
 import type { AppEnv } from "../lib/common/types";
+import {
+  insertOrder,
+  OrderValidationError,
+} from "../lib/create-order";
 import { useDB } from "../lib/db/db";
 import {
   categories,
@@ -163,6 +167,62 @@ export async function uploadImage(c: Context<AppEnv>) {
   return c.json({ url: data.secure_url, publicId: data.public_id });
 }
 
+export async function createAdminOrder(c: Context<AppEnv>) {
+  const db = useDB(c);
+  const body = await c.req.json<{
+    customerName?: string;
+    items?: Array<{ dishId: string; quantity: number }>;
+    orders?: Array<{
+      customerName: string;
+      items: Array<{ dishId: string; quantity: number }>;
+    }>;
+    status?: OrderStatus;
+  }>();
+
+  const status = body.status ?? "pending";
+  const validStatuses: OrderStatus[] = [
+    "pending",
+    "preparing",
+    "completed",
+    "cancelled",
+  ];
+
+  if (!validStatuses.includes(status)) {
+    return jsonError(c, "Invalid status", 400);
+  }
+
+  const payloads =
+    body.orders ??
+    (body.items
+      ? [{ customerName: body.customerName ?? "", items: body.items }]
+      : []);
+
+  if (!payloads.length) {
+    return jsonError(c, "Invalid order payload", 400);
+  }
+
+  try {
+    const created = [];
+    for (const entry of payloads) {
+      if (!entry.customerName?.trim()) {
+        throw new OrderValidationError("Customer name is required");
+      }
+      const order = await insertOrder(db, entry.items ?? [], {
+        status,
+        customerName: entry.customerName.trim(),
+      });
+      created.push(order);
+    }
+
+    return c.json(created.length === 1 ? created[0] : { orders: created }, 201);
+  } catch (err) {
+    if (err instanceof OrderValidationError) {
+      return jsonError(c, err.message, err.status);
+    }
+    throw err;
+  }
+}
+
 export async function getAdminOrders(c: Context<AppEnv>) {
   const db = useDB(c);
   const allOrders = await db
@@ -219,6 +279,24 @@ export async function updateOrderStatus(c: Context<AppEnv>) {
   }
 
   return c.json(updated);
+}
+
+export async function deleteOrder(c: Context<AppEnv>) {
+  const db = useDB(c);
+  const id = c.req.param("id");
+
+  const [order] = await db
+    .select()
+    .from(orders)
+    .where(eq(orders.id, id))
+    .limit(1);
+
+  if (!order) {
+    return jsonError(c, "Order not found", 404);
+  }
+
+  await db.delete(orders).where(eq(orders.id, id));
+  return c.json({ success: true });
 }
 
 export async function ordersStream(c: Context<AppEnv>) {

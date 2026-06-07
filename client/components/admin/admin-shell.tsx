@@ -3,13 +3,7 @@
 import { clearAdminToken, getAdminToken } from "@/lib/auth";
 import { t } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
-import {
-  LayoutDashboard,
-  LogOut,
-  Store,
-  Tags,
-  UtensilsCrossed,
-} from "lucide-react";
+import { LayoutDashboard, LogOut, Store, Tags, UtensilsCrossed } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
@@ -61,21 +55,21 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
       </header>
 
       <div className="mx-auto flex max-w-7xl flex-col lg:flex-row lg:gap-8 lg:px-6 lg:py-8">
-        <aside className="border-b border-zinc-200 bg-white px-4 py-3 lg:w-56 lg:shrink-0 lg:self-start lg:rounded-2xl lg:border lg:p-4 lg:shadow-sm">
-          <nav className="flex gap-1 overflow-x-auto pb-1 lg:flex-col lg:overflow-visible lg:pb-0">
+        <aside className="border-b border-zinc-200 bg-white px-3 py-3 sm:px-4 lg:w-56 lg:shrink-0 lg:self-start lg:rounded-2xl lg:border lg:p-4 lg:shadow-sm">
+          <nav className="flex w-full gap-1 lg:flex-col">
             {nav.map(({ href, label, icon: Icon }) => (
               <Link
                 key={href}
                 href={href}
                 className={cn(
-                  "flex shrink-0 items-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium transition-colors",
+                  "flex min-w-0 flex-1 items-center justify-center gap-1 rounded-lg px-2 py-2 text-xs font-medium transition-colors sm:gap-1.5 sm:px-3 sm:text-sm lg:flex-none lg:justify-start lg:px-4 lg:py-2.5",
                   pathname === href
                     ? "bg-black text-white"
                     : "text-zinc-600 hover:bg-zinc-100",
                 )}
               >
-                <Icon className="h-4 w-4" />
-                {label}
+                <Icon className="h-4 w-4 shrink-0" />
+                <span className="truncate">{label}</span>
               </Link>
             ))}
           </nav>
